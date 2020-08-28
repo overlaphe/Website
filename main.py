@@ -118,11 +118,11 @@ class LoginHandler(BaseHandler):
 class WrongPswdHandler(BaseHandler):
 	def get(self):
 		if self.get_secure_cookie("wherefrom") == "old_P":
-			self.render("html/WrongPa.html")
+			self.render("html/notice.html", title = "The password is wrong", des = "or wrong user name", url="../PasswordChange", text="Go back")
 		if self.get_secure_cookie("wherefrom") == "new_p":
-			self.render("html/RepeatPa.html")
+			self.render("html/notice.html", title = "The old password is not same as new", des = "or wrong user name", url="../PasswordChange", text="Go back")
 		else:
-			self.render("html/WrongPassword - 副本.html", title = "Wrong Password", des = "or wrong user name", url="../login", text="Go back")
+			self.render("html/notice.html", title = "Wrong Password", des = "or wrong user name", url="../login", text="Go back")
 	def post(self):
 		if self.get_secure_cookie("wherefrom") == "old_P":
 			self.redirect("/PasswordChange")
@@ -257,7 +257,6 @@ def Auto_Save():
 		time.sleep(60)
 
 def Search(ty, string):
-	print("1%s1"%string)
 	if ty == 0 or string == " " or string == "":
 		return [[-1," "]]
 	global Data
@@ -271,7 +270,6 @@ def Search(ty, string):
 					break
 			else:
 				ret.append([i,Data["id_Name"][i]])
-	print(ret)
 	if ret == [[]]:
 		return [[-1," "]]
 	return ret
@@ -281,8 +279,6 @@ Data = {"Name_id":{},"id_Name":{},"id_Data":{},"Avlb":[0]}
 New_Student("Admin")
 New_Student("TonyZhaChuanming")
 Data_Modify("Admin","PmLv",0)
-
-Search(1," ")
 
 """
 To Do list:
