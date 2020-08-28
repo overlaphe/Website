@@ -1,0 +1,120 @@
+<html>
+  <head>
+    <style>
+      p{
+        margin: 8px;
+      }
+      body {
+        background-image: url("Asset/bk.gif");
+        background-repeat: no-repeat;
+        background-attachment: fixed;
+        background-size: cover;
+        font-family: Arial;
+      }
+
+      body.div {
+        text-align: center
+      }
+
+      section{
+        max-width: 400px;
+        margin:300px auto;
+        padding: 10px;
+        background: rgba(0,0,0,0.3);
+        border-radius: 10px
+      }
+
+      .text {
+        width: 100px;
+        text-align: left;
+        float: left;
+      }
+
+      input[type=text], input[type=password]{
+      	margin-left: 10%;
+      	margin-right: 10%;
+      	width: 80%;
+      	border-radius: 20px;
+        float: left;
+        margin-bottom: 10px;
+        padding: 5px 15px;
+        background: rgba(0,0,0,0);
+        font-size: 20px;
+        border: 3px solid white;
+        caret-color: white;
+        color: white;
+      }
+
+      input[type=submit], button{
+      	margin: 0px 10%;
+      	width: 80%;
+      	height: 40px;
+      	border-radius: 20px;
+      	background: rgba(0,0,0,0.4);
+      	font-size: 20px;
+      	color: white;
+      	border: 3px solid white;
+      	margin-bottom: 34px
+      }
+
+      input[type=submit]:active, button:active{
+      	margin: 0px 10%;
+      	width: 80%;
+      	height: 40px;
+      	border-radius: 20px;
+      	background: rgba(255,255,255,0.6);
+      	font-size: 20px;
+      	color: white;
+      	border: 3px solid white;
+      	margin-bottom: 34px
+      }
+
+      input[type=checkbox]{
+      	border-radius: 50%;
+      	box-sizing: inherit;
+      }
+
+      h1{
+      	color: white;
+      	font-size:30px;
+        margin-bottom: 0px;
+      }
+
+      h2{
+        margin:8px;
+      }
+
+      label{
+      	color: white;
+      }
+
+      hr{
+        color: white;
+      }
+
+      ::placeholder{
+      	color: white;
+      	opacity: 0.6
+      }
+    </style>
+    <script type="text/javascript">
+      function goto(adres){
+        window.location.href = adres;
+      }
+    </script>
+  </head>
+  <body>
+    <div style="text-align:center">
+      <section style="color:white">
+        <h1>
+          SUIS ECA System
+        </h1>
+        <hr>
+          <h2>{{ title }}</h2>
+          <p style="color:rgba(255,255,255,0.8)">{{ des }}</p>
+          <div style="margin-bottom: 10px"></div>
+          <button onclick="goto('{{ url }}')">{{ text }}</button>
+      </section>
+    </div>
+  </body>
+</html>
