@@ -212,6 +212,10 @@ class SearchHandler(BaseHandler):
 		print(g)
 		self.redirect("/login")
 
+class AttendenceHandler(BaseHandler):
+	def get(self):
+		self.render("html/Attendence.html",dicti={0:["ABC CL","checked",["a","b","c"]],1:["DEF CL","checked",["d","e","f"]]})
+
 def New_Student(Name):
 	global Data
 	target_id = Data["Avlb"][0]
@@ -298,6 +302,7 @@ if True:
 		(r"/Asset/(.*)",tornado.web.StaticFileHandler, {"path":"./Asset"}),
 		(r"/ECACreation",ECACreationHandler),
 		(r"/PasswordChange", PasswordChangeHandler),
+		(r"/Attendence",AttendenceHandler),
 		(r"/Search/(.*)/(.*)",SearchHandler)],
 	cookie_secret="1234567")
 	server = tornado.httpserver.HTTPServer(app)
