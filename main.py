@@ -167,27 +167,47 @@ class TestHandler(BaseHandler):
 
 class ECACreationHandler(BaseHandler):
 	def get(self):
-		if self.get_permission_level()==0:
-			self.render("html/ECACreate.html")
-		else:
+		global Data
+		if self.get_permission_level()!=0:
 			self.redirect("/login")
+			return
+		data = {}
+		try:
+			data = eval(self.get_secure_cookie("temp"))
+			print(data,"?")
+		except:
+			pass
+		for i in [1,2,3,4]:
+			if i not in data:
+				data[i] = False
+		if "Name" not in data:
+			data["Name"] = ""
+		for i in ["2","1"]:
+			if i not in data:
+				data[i] = "Not selected yet"
+			else:
+				data[i] = Data["id_Name"][data[i]]
+		print(data)
+		self.render("html/ECACreate.html",list=data)			
 	def post(self):
 		Days = {}
-		if self.get_argument("ECA_name") == "":
-			print(".?")
-			self.redirect("/Admin")
-			return
+		try:
+			Days = eval(self.get_secure_cookie("temp"))
+			print(Days)
+		except:
+			pass
 		for i in [1,2,3,4]:
 			try:
 				self.get_argument(str(i))
 				Days[i] = True
 			except:
-				pass
+				Days[i] = False
 		Days["Name"] = self.get_argument("ECA_name")
+		print(str(Days))
 		self.set_secure_cookie("temp",str(Days))
 		try:
 			self.get_argument("search_student")
-			self.redirect("/Search/0/ ")
+			self.redirect("/Search/2/ ")
 			return
 		except:
 			try:
@@ -196,6 +216,7 @@ class ECACreationHandler(BaseHandler):
 				return
 			except:
 				pass
+		ClubCreating()
 		self.redirect("/Admin")
 
 class SearchHandler(BaseHandler):
@@ -205,12 +226,28 @@ class SearchHandler(BaseHandler):
 		b = int(b)
 		m = Search(b,str(a))
 		self.render("html/test.html",list=m,type=b)
-	def post(self, *args):
-		f = self.get_argument("i")
-		print(f)
+	def post(self, b, a):
+		try:
+			text = self.get_argument("T")
+			self.redirect("/Search/%s/%s"%(b,text))
+			return
+		except:
+			pass
+		n = self.get_argument("i")
+		print(n)
 		g = self.get_argument("j")
 		print(g)
-		self.redirect("/login")
+		try:
+			f = self.get_secure_cookie("temp")
+			f = eval(f)
+		except:
+			f = {}
+		f[n] = int(g)
+		self.set_secure_cookie("temp",str(f))
+		if int(g) in [0,1,2]:
+			self.redirect("/ECACreation")
+		else:
+			self.redirect("/Admin")
 
 class AttendenceHandler(BaseHandler):
 	def get(self):
@@ -278,11 +315,32 @@ def Search(ty, string):
 		return [[-1," "]]
 	return ret
 
-Data = {"Name_id":{},"id_Name":{},"id_Data":{},"Avlb":[0]}
+def new_Club(Name,advisor,leader,days):
+	global Data
+	target_id = None
+	if len(Data["Clubs"]) == 0:
+		target_id = 0
+	else:
+		target_id = max(Data["Clubs"]) + 1
+	Data["Clubs"][target_id] = {}
+	Data["Clubs"][target_id]["Name"] = Name
+	Data["Clubs"][target_id]["advisor"] = advisor
+	Data["Clubs"][target_id]["leader"] = leader
+	Data["Clubs"][target_id]["students"] = {}
+	for day in days:
+		Data["Clubs"][target_id]["students"][day] = []
+
+Data = {"Name_id":{},"id_Name":{},"id_Data":{},"Avlb":[0], "Clubs":{}}
 
 New_Student("Admin")
 New_Student("TonyZhaChuanming")
+New_Student("JoshAntonio")
+Data_Modify("JoshAntonio","PmLv",2)
 Data_Modify("Admin","PmLv",0)
+
+new_Club("CS Club",1,0,[2,4])
+
+print(Data)
 
 """
 To Do list:
@@ -290,7 +348,7 @@ To Do list:
 	make a more aligned shit
 """
 
-if True:
+if False:
 	threading.Thread(target=Auto_Save).start()
 	app = tornado.web.Application(handlers=[(r"/",MainHandler),
 		(r"/login",LoginHandler),

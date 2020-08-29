@@ -36,6 +36,10 @@
 	</script>
 </head>
 <body>
+	<form method="post">
+		<input type="text" name="T">
+		<input type="submit" value="Search">
+	</form>
 	{% for i in list %}
 	<p onclick="post('/Search/1/test',{j:{{type}}, i:{{ i[0] }}} )">
 		{{ i[1] }}
