@@ -113,57 +113,26 @@ class LoginHandler(BaseHandler):
 				self.redirect("/Admin")
 				return
 			self.redirect("/index")
-		self.redirect("/WrongPassword")
-
-class WrongPswdHandler(BaseHandler):
-	def get(self):
-		if self.get_secure_cookie("wherefrom") == "old_P":
-			self.render("html/notice.html", title = "The password is wrong", des = "or wrong user name", url="../PasswordChange", text="Go back")
-		if self.get_secure_cookie("wherefrom") == "new_p":
-			self.render("html/notice.html", title = "The old password is not same as new", des = "or wrong user name", url="../PasswordChange", text="Go back")
-		else:
-			self.render("html/notice.html", title = "Wrong Password", des = "or wrong user name", url="../login", text="Go back")
-	def post(self):
-		if self.get_secure_cookie("wherefrom") == "old_P":
-			self.redirect("/PasswordChange")
-		if self.get_secure_cookie("wherefrom") == "new_p":
-			self.redirect("/PasswordChange")
-		else:
-			self.redirect("/login")
-
-class ECACreationHandler(BaseHandler):
-	def get(self):
-		if get_permission_level()==0:
-			self.render("html/ECACreate.html")
-		else:
-			self.redirect("/login")
-	def post(self):
-		self.redirect("/Admin")
+		self.redirect("/notice/Wrnong Password/or wrong user name/login/Go back")
 
 class PasswordChangeHandler(BaseHandler):
 	def get(self):
 		self.render("html/PasswordChange.html")
 	def post(self):
-		if self.get_argument("original_p") == Data["id_Data"][self.get_User_id()]["Pswd"]:
-			if self.get_argument("new_p") == self.get_argument("repeat_p"):
-				Data["id_Data"][self.get_User_id()]["Pswd"] = self.get_argument("new_p")
-				if self.get_permission_level() == 0:
-					self.redirect("/Admin")
-				elif self.get_permission_level() == 1:
-					self.redirect("/index")
-			else:
-				self.set_secure_cookie("wherefrom","new_p")
-				self.redirect("/WrongPassword")
-		else:
-			self.set_secure_cookie("wherefrom","old_P")
-			self.redirect("/WrongPassword")
-
-class TestHandler(BaseHandler):
-	def get(self):
-		self.render("html/test.html")
-	def post(self):
-		print(self.get_argument("i"))
-		self.redirect("/login")
+		if self.get_argument("original_p") != Data["id_Data"][self.get_User_id()]["Pswd"]:
+			self.redirect("notice/The password is wrong/or wrong user name/PasswordChange/Go back")
+			return
+		if self.get_argument("new_p") != self.get_argument("repeat_p"):
+			self.redirect("/notice/The old password is not same as new/or wrong user name/PasswordChange/Go back")
+			return
+		if self.get_argument("new_p").__len__() < 8:
+			self.redirect("/notice/The passowrd is too short/at least 8 digits/PasswordChange/Go back")
+			return
+		Data["id_Data"][self.get_User_id()]["Pswd"] = self.get_argument("new_p")
+		if self.get_permission_level() == 0:
+			self.redirect("/Admin")
+			return
+		self.redirect("/index")
 
 class ECACreationHandler(BaseHandler):
 	def get(self):
@@ -191,6 +160,7 @@ class ECACreationHandler(BaseHandler):
 		self.render("html/ECACreate.html",list=data)			
 	def post(self):
 		Days = {}
+		m = []
 		try:
 			Days = eval(self.get_secure_cookie("temp"))
 			print(Days)
@@ -200,10 +170,10 @@ class ECACreationHandler(BaseHandler):
 			try:
 				self.get_argument(str(i))
 				Days[i] = True
+				m.append(i)
 			except:
 				Days[i] = False
 		Days["Name"] = self.get_argument("ECA_name")
-		print(str(Days))
 		self.set_secure_cookie("temp",str(Days))
 		try:
 			self.get_argument("search_student")
@@ -216,8 +186,11 @@ class ECACreationHandler(BaseHandler):
 				return
 			except:
 				pass
-		ClubCreating()
-		self.redirect("/Admin")
+		try:
+			new_Club(Days["Name"],Days['2'],Days['1'],m)
+			self.redirect("/notice/Succeed!/Club create finisded/Admin/Go back")
+		except:
+			self.redirect("/notice/Missing Infomation/re fill-in the form please/ECACreation/Go back")
 
 class SearchHandler(BaseHandler):
 	def get(self, b, a):
@@ -225,7 +198,7 @@ class SearchHandler(BaseHandler):
 		global Data
 		b = int(b)
 		m = Search(b,str(a))
-		self.render("html/test.html",list=m,type=b)
+		self.render("html/search.html",list=m,type=b)
 	def post(self, b, a):
 		try:
 			text = self.get_argument("T")
@@ -252,6 +225,10 @@ class SearchHandler(BaseHandler):
 class AttendenceHandler(BaseHandler):
 	def get(self):
 		self.render("html/Attendence.html",dicti={0:["ABC CL","checked",["a","b","c"]],1:["DEF CL","checked",["d","e","f"]]})
+
+class NoticeHandler(BaseHandler):
+	def get(self,a,b,c,d):
+		self.render("html/notice.html", title = a, des = b, url="/"+c, text=d)
 
 def New_Student(Name):
 	global Data
@@ -327,8 +304,16 @@ def new_Club(Name,advisor,leader,days):
 	Data["Clubs"][target_id]["advisor"] = advisor
 	Data["Clubs"][target_id]["leader"] = leader
 	Data["Clubs"][target_id]["students"] = {}
+	Data["id_Data"][0]["Lead"].append(target_id)
+	Data["id_Data"][advisor]["Lead"].append(target_id)
+	Data["id_Data"][leader]["Lead"].append(target_id)
 	for day in days:
 		Data["Clubs"][target_id]["students"][day] = []
+		add_student_to_club(target_id,leader,day)
+
+def add_student_to_club(Club_id,student_id,day):
+	global Data
+	Data["Clubs"][Club_id]["students"][day].append(student_id)
 
 Data = {"Name_id":{},"id_Name":{},"id_Data":{},"Avlb":[0], "Clubs":{}}
 
@@ -340,6 +325,8 @@ Data_Modify("Admin","PmLv",0)
 
 new_Club("CS Club",1,0,[2,4])
 
+
+
 print(Data)
 
 """
@@ -348,11 +335,10 @@ To Do list:
 	make a more aligned shit
 """
 
-if False:
+if True:
 	threading.Thread(target=Auto_Save).start()
 	app = tornado.web.Application(handlers=[(r"/",MainHandler),
 		(r"/login",LoginHandler),
-		(r"/WrongPassword",WrongPswdHandler),
 		(r"/Admin",AdminPageHandler),
 		(r"/Admin/ClubCreating",AdminPageHandler),
 		(r"/index",IndexHandler),
@@ -361,7 +347,8 @@ if False:
 		(r"/ECACreation",ECACreationHandler),
 		(r"/PasswordChange", PasswordChangeHandler),
 		(r"/Attendence",AttendenceHandler),
-		(r"/Search/(.*)/(.*)",SearchHandler)],
+		(r"/Search/(.*)/(.*)",SearchHandler),
+		(r"/notice/(.*)/(.*)/(.*)/(.*)",NoticeHandler)],
 	cookie_secret="1234567")
 	server = tornado.httpserver.HTTPServer(app)
 	server.listen(8800)
