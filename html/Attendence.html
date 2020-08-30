@@ -41,11 +41,11 @@
 				font-size: 45px
 			}
 			h2{
-				margin: 20px 10px;
+				margin: 10px 10px;
 			}
 			div{
 				width: 800px;
-				margin: 8px auto;
+				margin: 8px 20px;
 				background:rgba(0,0,0,0);
 			}
 			pre{
@@ -65,12 +65,22 @@
 	<section>
 		<h1>Attendence Data</h1>
 		<hr>
+		<div style = "margin: 20px 30px">
+			<div style="width:20%; float:left">Club Names</div>
+			<div style="width:20%; float:left">Checked State</div>
+			<div style="width:40%; float:left">Absent&nbsp;Ones</div>
+		</div>
 		{%for i in dicti%}
-		<section style = "background: rgba(0,0,0,0.3); margin: 0px 30px">
-			<div style = "background: rgba(255,255,255,0.1)">{{dicti[i][0]}}</div>
-			<div>{{dicti[i][1]}}</div>
-			<div>Absent&nbsp;Ones</div>{%for j in dicti[i][2]%}<div style = "font-size: 15px">{{j}}</div>{%end%}
-		</section>
+		<div style = "margin: 20px 30px">
+			<div style="width:20%; float:left">{{dicti[i][0]}}</div>
+			<div style="width:20%; float:left">{{dicti[i][1]}}</div>
+			{%for j in dicti[i][2]%}
+				<div style="clear:both"></div>
+				<div style="width: 40%; margin:8px 40px; float:left"></div>
+				<div style = "font-size: 15px; float:left; width: 50px">{{j}}</div>
+			{%end%}
+			<div style="clear:both"></div>
+		</div>
 		{%end%}
 	</section>
 </html>

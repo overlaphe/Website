@@ -87,7 +87,7 @@
 			}
 
 			body {
-				background-image: url("Asset/bk.gif");
+				background-image: url("/Asset/bk.gif");
 				background-repeat: no-repeat;
 				background-attachment: fixed;
 				background-size: cover;
@@ -161,10 +161,10 @@
 			</h1>
 			<hr>
 			<form style="font-size: 30px" method="post">
-				{% for i,j in enumerate(list) %}
+				{% for i in di %}
 				<label class="container">
 					<p>
-						{{ escape(j) }}
+						{{ di[i] }}
 					</p>
 					<input type="checkbox" name="{{i}}">
 					<span class="checkmark"></span>

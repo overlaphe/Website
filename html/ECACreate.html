@@ -109,6 +109,7 @@
 
 			h2{
 				margin: 20px 10px;
+				width: 100px;
 			}
 
 			.selectable:hover{
@@ -125,19 +126,26 @@
 				color: white;
 			}
 
+			p{
+				min-width: 200px;
+				float: left;
+				margin:0px;
+				margin-bottom: 20px;
+			}
+
 			.sub{
 				margin-left: 20px;
 			}
 
 			input[type=submit]{
 				margin-left:15px;
-				padding: 10px 15px;
+				padding: 5px 15px;
 				border-radius: 20px;
 				background: rgba(0,0,0,0.4);
 				font-size: 20px;
 				color: white;
 				border: 3px solid white;
-				margin-bottom: 34px
+				margin-bottom: 0px
 			}
 
 			input[type=submit]:active{
@@ -146,6 +154,23 @@
 
 			input[type=submit]:hover{
 				background: rgba(255,255,255,0.3);
+			}
+
+			input[type=text], input[type=password]{
+				width: 300px;
+				border-radius: 20px;
+				float: left;
+				margin-bottom: 10px;
+				padding: 5px 15px;
+				background: rgba(0,0,0,0);
+				font-size: 20px;
+				border: 3px solid white;
+				caret-color: white;
+				color: white;
+			}
+
+			.clear{
+				clear: both;
 			}
 		</style>
 	</head>
@@ -157,15 +182,27 @@
 			<hr>
 			<section style="background: rgba(0,0,0,0); margin: 0px 30px">
 				<form method = "post">
-					ECA Name: <input type="text" name="ECA_name"><br>
-					Student Leader: 1<br>
+					<p style="width:240px"> ECA Name:</p> 
+					<input type="text" name="ECA_name" value="{{list['Name']}}">
+					<div class="clear"></div>
+					<p style="width:240px">Student Leader:</p> <p>{{list['1']}}</p>
+					<input type="submit" value="search" name="search_teacher" style="float:left">
+					<div class="clear"></div>
+					<p style="width:240px">Advisor:</p> <p>{{list['2']}}</p>
 					<input type="submit" value="search" name="search_student">
-					Advisor: 1<br>
-					<input type="submit" value="search" name="search_teacher">
-					Days:<br> <input type="checkbox" name="1" value="Monday">Monday<br>
-					<input type="checkbox" name="2" value="Tuesday">Tuesday<br>
-					<input type="checkbox" name="3" value="Wednesday">Wednesday<br>
-					<input type="checkbox" name="4" value="Thursday">Thursday<br>
+					<div class="clear"></div>
+					<p>Days:</p>
+					<div class="clear"></div>
+					{% for i,j in enumerate(["Monday","Tuesday","Wednesday","Thursday"])%}
+						<label class="container">
+							<p>
+								{{j}}
+							</p>
+							<input type="checkbox" name="{{i+1}}" {% if list[i+1]%} checked="" {% end %}>
+							<span class="checkmark"></span>
+						</label>
+						<div class="clear"></div>
+					{% end %}
 					<input type="submit" value="submit" name="submit">
 				</form>
 			</section>

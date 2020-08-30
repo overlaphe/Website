@@ -164,24 +164,34 @@
 				<h2>
 					Admin Menu:
 				</h2>
-				=><h2 class="selectable tab" onclick="goto('../ECACreation')">
-					nothing YET
+				<h2 class="selectable tab" onclick="goto('../ECACreation')">
+					ECA Create
 				</h2>
 				<h2>
 					Managing:
 				</h2>
-				<h2 class="selectable tab" onclick="goto('../TestCheckin')">
-					Test managing
+				<h2 class="selectable tab" onclick="goto('../Attendence')">
+					Attendance
 				</h2>
 				<h2>
 					Account Settings:	
 				</h2>
-				=><h2 class="selectable tab" onclick="goto('../PasswordChange')">
+				<h2 class="selectable tab" onclick="goto('../PasswordChange')">
 					Change Password
 				</h2>
-				=><h2 class="selectable tab" onclick="goto('../login')">
+				<h2 class="selectable tab" onclick="goto('../login')">
 					Log out
 				<h2>
+				{% if di.__len__() != 0 %}
+					<h2>
+						Attendance Check-in:	
+					</h2>
+					{% for i in di%}
+						<h2 class="selectable tab" onclick="goto('../Checkin/{{i}}')">
+							{{di[i]}}
+						<h2>
+					{% end %}
+				{% end %}
 			</section>
 			</div>
 		</section>
