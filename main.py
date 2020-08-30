@@ -67,7 +67,6 @@ class CheckinHandler(BaseHandler):
 			a = int(a)
 		except:
 			return
-		global Data
 		if self.get_permission_level() != 0:
 			self.redirect("/login")
 		if a not in Data["id_Data"][self.get_User_id()]["Lead"]:
@@ -226,7 +225,7 @@ class SearchHandler(BaseHandler):
 		global Data
 		b = int(b)
 		m = Search(b,str(a))
-		self.render("html/search.html",list=m,type=b)
+		self.render("html/search.html",list=m,type=b,a=a)
 	def post(self, b, a):
 		try:
 			text = self.get_argument("T")
@@ -237,13 +236,13 @@ class SearchHandler(BaseHandler):
 		n = self.get_argument("i")
 		print(n)
 		g = self.get_argument("j")
-		print(g)
+		print(g,"j")
 		try:
 			f = self.get_secure_cookie("temp")
 			f = eval(f)
 		except:
 			f = {}
-		f[n] = int(g)
+		f[g] = int(n)
 		self.set_secure_cookie("temp",str(f))
 		if int(g) in [0,1,2]:
 			self.redirect("/ECACreation")
@@ -252,7 +251,35 @@ class SearchHandler(BaseHandler):
 
 class AttendenceHandler(BaseHandler):
 	def get(self):
-		self.render("html/Attendence.html",dicti={0:["ABC CL","checked",["a","b","c"]],1:["DEF CL","checked",["d","e","f"]]})
+		global Temp,Data
+		dicti = {}
+		for s in Data["Clubs"]:
+			dicti[s]=[]
+			dicti[s].append(Data["Clubs"][s]["Name"])
+			li = []
+			if s in Temp:
+				dicti[s].append("checked")
+				for i in Temp[s]:
+					li.append(Data["id_Name"][i])
+			else:
+				dicti[s].append("unchecked")
+				li = []
+			dicti[s].append(li)
+		self.render("html/Attendence.html",dicti=dicti)
+
+class ClubManageHandler(BaseHandler):
+	def get(self,a):
+		global Data
+		try:
+			a = int(a)
+		except:
+			return
+		if a not in Data["id_Data"][self.get_User_id()]["Lead"]:
+			self.redirect("/notice/No Permission/Just leave this page/Admin/Go back")
+			return
+		s = Data["Clubs"][a]["students"]
+		self.render("html/ClubMemberManager.html",s=s)
+
 
 class NoticeHandler(BaseHandler):
 	def get(self,a,b,c,d):
@@ -377,6 +404,7 @@ if True:
 		(r"/Asset/(.*)",tornado.web.StaticFileHandler, {"path":"./Asset"}),
 		(r"/ECACreation",ECACreationHandler),
 		(r"/PasswordChange", PasswordChangeHandler),
+		(r"/ClubManage/(.*)", ClubManageHandler),
 		(r"/Attendence",AttendenceHandler),
 		(r"/Search/(.*)/(.*)",SearchHandler),
 		(r"/notice/(.*)/(.*)/(.*)/(.*)",NoticeHandler)],

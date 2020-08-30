@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>
+		tesat
+	</title>
+</head>
+<body>
+	{% for i in s %}
+		<p>
+			{{i}}
+		</p>
+		{% for j in s[i] %}
+			<p style="margin-left: 40px">
+				{{j}}
+			</p>
+		{% end %}
+	{% end %}
+</body>
+</html>
