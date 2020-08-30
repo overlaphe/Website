@@ -87,6 +87,13 @@ class ManageHandler(BaseHandler):
 		if a not in Data["id_Data"][self.get_User_id()]["Lead"]:
 			self.redirect("/notice/No Permission/Just leave this page/Admin/Go back")
 			return
+		try:
+			f = self.get_secure_cookie("temp")
+			f = eval(f)
+			add_student_to_club(int(a),f[str(int(a)+3)],get_day())
+			self.clear_cookie("temp")
+		except:
+			pass
 		Students = Data["Clubs"][a]["students"][get_day()]
 		Students.sort()
 		dic = {}
@@ -98,7 +105,7 @@ class ManageHandler(BaseHandler):
 		global Data
 		try:
 			self.get_argument("search_student")
-			self.redirect("/search/3")
+			self.redirect("/Search/" +str(int(a)+3)+ "/ ")
 			return
 		except:
 			pass
@@ -107,11 +114,9 @@ class ManageHandler(BaseHandler):
 			try:
 				print(i,type(i))
 				self.get_argument(str(i))
-				print(":P")
 				Remove_Member(i, int(a),get_day())
-				print(Data)
 			except:
-				continue
+				pass
 		self.redirect("/MainPage")
 
 class CheckinHandler(BaseHandler):
@@ -146,7 +151,7 @@ class CheckinHandler(BaseHandler):
 		print(Temp)
 		print("...I dnot really know if it do success")
 		print("Just assume it is.")
-		self.redirect("/Admin")
+		self.redirect("/MainPage")
 
 class SubmitHandler(BaseHandler):
 	def get(self):
@@ -265,11 +270,15 @@ class ECACreationHandler(BaseHandler):
 
 class SearchHandler(BaseHandler):
 	def get(self, b, a):
-		print(str(a))
-		global Data
-		b = int(b)
-		m = Search(b,str(a))
-		self.render("html/search.html",list=m,type=b,a=a)
+		if b in ["1","2"]:
+			print(str(a))
+			global Data
+			b = int(b)
+			m = Search(b,str(a))
+			self.render("html/search.html",list=m,type=b,a=a)
+		else:
+			m = Search(1,str(a))
+			self.render("html/search.html",list=m,type=b,a=a)
 	def post(self, b, a):
 		try:
 			text = self.get_argument("T")
@@ -291,7 +300,7 @@ class SearchHandler(BaseHandler):
 		if int(g) in [0,1,2]:
 			self.redirect("/ECACreation")
 		else:
-			self.redirect("/MainPage")
+			self.redirect("/Manage/" + str(int(g)-3))
 
 class MainPageHandler(BaseHandler):
 	def get(self):
