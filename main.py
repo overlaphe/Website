@@ -94,18 +94,24 @@ class ManageHandler(BaseHandler):
 			dic[i] = Data["id_Name"][i]
 		Club_Name = Data["Clubs"][a]["Name"]
 		self.render("html/Students-Management.html",dic=dic,Title=Club_Name)
-	def post(self):
-		for i in Data["Clubs"][a]["students"][get_day()]:
-			try:
-				self.get_argument(str(i))
-				Remove_Member(Data["Clubs"][a]["students"][get_day()][i], i, a,get_day())
-			except:
-				continue
+	def post(self,a):
+		global Data
 		try:
 			self.get_argument("search_student")
 			self.redirect("/search/3")
+			return
 		except:
-			print("n")
+			pass
+		print(Data["Clubs"][int(a)]["students"][get_day()])
+		for i in Data["Clubs"][int(a)]["students"][get_day()]:
+			try:
+				print(i,type(i))
+				self.get_argument(str(i))
+				print(":P")
+				Remove_Member(i, int(a),get_day())
+				print(Data)
+			except:
+				continue
 		self.redirect("/MainPage")
 
 class CheckinHandler(BaseHandler):
@@ -331,9 +337,10 @@ class NoticeHandler(BaseHandler):
 	def get(self,a,b,c,d):
 		self.render("html/notice.html", title = a, des = b, url="/"+c, text=d)
 
-def Remove_Member(a,b,c,d):
+def Remove_Member(member_id,club_id,day):
+	#
 	global Data
-	Data["Clubs"][c]["students"][d].remove(Data["Clubs"][c]["students"][d][b])
+	Data["Clubs"][club_id]["students"][day].remove(member_id)
 
 def New_Student(Name):
 	global Data
