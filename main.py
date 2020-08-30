@@ -60,6 +60,54 @@ class AdminPageHandler(BaseHandler):
 		self.set_secure_cookie("auto_login","0")
 		self.redirect("/login")
 
+class StandardHandler(BaseHandler):
+	def get(self):
+		global Data
+		if self.get_permission_level() == 0:
+			self.redirect("/Admin")
+		di = {}
+		li = Data["id_Data"][self.get_User_id()]["Lead"]
+		for i in li:
+			if Data["id_Name"][Data["Clubs"][i]["leader"]]:
+				di[i] = Data["Clubs"][i]["Name"]
+		self.render("html/StandardUser.html", user = self.get_current_user(), dic=di)
+	def post(self):
+		self.set_secure_cookie("auto_login","0")
+		self.redirect("/login")
+
+class ManageHandler(BaseHandler):
+	def get(self,a):
+		global Data
+		try:
+			a = int(a)
+		except:
+			return
+		if self.get_permission_level() == 0:
+			self.redirect("/Admin")
+		if a not in Data["id_Data"][self.get_User_id()]["Lead"]:
+			self.redirect("/notice/No Permission/Just leave this page/Admin/Go back")
+			return
+		Students = Data["Clubs"][a]["students"][get_day()]
+		Students.sort()
+		dic = {}
+		for i in Students:
+			dic[i] = Data["id_Name"][i]
+		Club_Name = Data["Clubs"][a]["Name"]
+		self.render("html/Students-Management.html",dic=dic,Title=Club_Name)
+	def post(self):
+		for i in Data["Clubs"][a]["students"][get_day()]:
+			try:
+				self.get_argument(str(i))
+				Remove_Member(Data["Clubs"][a]["students"][get_day()][i], i, a,get_day())
+			except:
+				continue
+		try:
+			self.get_argument("search_student")
+			self.redirect("/search/3")
+		except:
+			print("n")
+		self.redirect("/MainPage")
+
 class CheckinHandler(BaseHandler):
 	def get(self,a):
 		global Data
@@ -67,8 +115,6 @@ class CheckinHandler(BaseHandler):
 			a = int(a)
 		except:
 			return
-		if self.get_permission_level() != 0:
-			self.redirect("/login")
 		if a not in Data["id_Data"][self.get_User_id()]["Lead"]:
 			self.redirect("/notice/No Permission/Just leave this page/Admin/Go back")
 			return
@@ -118,10 +164,7 @@ class LoginHandler(BaseHandler):
 				if self.get_secure_cookie("auto_login") == b'1': 
 					User_Name = str(self.current_user,"utf-8")
 					Level = Data["id_Data"][Data["Name_id"][User_Name]]["PmLv"]
-					if Level == 0:
-						self.redirect("/Admin")
-					else:
-						self.redirect("/index")
+					self.redirect("/MainPage")
 			except:
 				pass
 		self.render("html/Login.html")
@@ -136,10 +179,8 @@ class LoginHandler(BaseHandler):
 			except:
 				self.set_secure_cookie("auto_login", "0")
 			self.set_secure_cookie("user", User_id)
-			if Data["id_Data"][Data["Name_id"][User_id]]["PmLv"] == 0:
-				self.redirect("/Admin")
-				return
-			self.redirect("/index")
+			self.redirect("/MainPage")
+			return
 		self.redirect("/notice/Wrnong Password/or wrong user name/login/Go back")
 
 class PasswordChangeHandler(BaseHandler):
@@ -156,10 +197,7 @@ class PasswordChangeHandler(BaseHandler):
 			self.redirect("/notice/The passowrd is too short/at least 8 digits/PasswordChange/Go back")
 			return
 		Data["id_Data"][self.get_User_id()]["Pswd"] = self.get_argument("new_p")
-		if self.get_permission_level() == 0:
-			self.redirect("/Admin")	
-			return
-		self.redirect("/index")
+		self.redirect("/MainPage")
 
 class ECACreationHandler(BaseHandler):
 	def get(self):
@@ -247,7 +285,16 @@ class SearchHandler(BaseHandler):
 		if int(g) in [0,1,2]:
 			self.redirect("/ECACreation")
 		else:
+			self.redirect("/MainPage")
+
+class MainPageHandler(BaseHandler):
+	def get(self):
+		if self.get_permission_level() == 0:
 			self.redirect("/Admin")
+		elif self.get_permission_level() == 1:
+			self.redirect("/Standard")
+		else:
+			self.redirect("/login")
 
 class AttendenceHandler(BaseHandler):
 	def get(self):
@@ -280,10 +327,13 @@ class ClubManageHandler(BaseHandler):
 		s = Data["Clubs"][a]["students"]
 		self.render("html/ClubMemberManager.html",s=s)
 
-
 class NoticeHandler(BaseHandler):
 	def get(self,a,b,c,d):
 		self.render("html/notice.html", title = a, des = b, url="/"+c, text=d)
+
+def Remove_Member(a,b,c,d):
+	global Data
+	Data["Clubs"][c]["students"][d].remove(Data["Clubs"][c]["students"][d][b])
 
 def New_Student(Name):
 	global Data
@@ -400,12 +450,15 @@ if True:
 		(r"/Admin",AdminPageHandler),
 		(r"/Admin/ClubCreating",AdminPageHandler),
 		(r"/index",IndexHandler),
+		(r"/Standard", StandardHandler),
 		(r"/Checkin/(.*)",CheckinHandler),
+		(r"/Manage/(.*)", ManageHandler),
 		(r"/Asset/(.*)",tornado.web.StaticFileHandler, {"path":"./Asset"}),
 		(r"/ECACreation",ECACreationHandler),
 		(r"/PasswordChange", PasswordChangeHandler),
 		(r"/ClubManage/(.*)", ClubManageHandler),
 		(r"/Attendence",AttendenceHandler),
+		(r"/MainPage",MainPageHandler),
 		(r"/Search/(.*)/(.*)",SearchHandler),
 		(r"/notice/(.*)/(.*)/(.*)/(.*)",NoticeHandler)],
 	cookie_secret="1234567")

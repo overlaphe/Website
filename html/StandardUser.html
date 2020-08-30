@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>
+			Hi, {{user}}
+		</title>
+		<style>
+			p{
+				font-size: 30px;
+				margin: 8px;
+			}
+			label{
+				margin-left: 15px;
+			}
+			.container {
+				display: block;
+				position: relative;
+				padding-left: 35px;
+				margin-bottom: 12px;
+				cursor: pointer;
+				font-size: 22px;
+				-webkit-user-select: none;
+				-moz-user-select: none;
+				-ms-user-select: none;
+				user-select: none;
+			}
+
+			/* Hide the browser's default checkbox */
+			.container input {
+				margin-left:15px;
+				position: absolute;
+				opacity: 0;
+				cursor: pointer;
+				height: 0;
+				width: 0;
+			}
+
+			/* Create a custom checkbox */
+			.checkmark {
+				border: 3px solid white;
+				border-radius: 3px;
+				position: absolute;
+				top: 0;
+				left: 0;
+				height: 25px;
+				width: 25px;
+				background-color: rgb(255,0,0,0.6);
+			}
+
+			/* On mouse-over, add a grey background color */
+			.container:hover input ~ .checkmark {
+				background-color: rgb(255,0,0,0.3);
+			}
+
+			/* When the checkbox is checked, add a blue background */
+			.container input:checked ~ .checkmark {
+				background-color: rgb(76,187,23,0.8);
+			}
+
+			.container:hover input:checked ~ .checkmark {
+				background-color: rgba(76,187,23,0.3);
+			}
+
+			/* Create the checkmark/indicator (hidden when not checked) */
+			.checkmark:after {
+				content: "";
+				position: absolute;
+				display: none;
+			}
+
+			/* Show the checkmark when checked */
+			.container input:checked ~ .checkmark:after {
+				display: block;
+			}
+
+			/* Style the checkmark/indicator */
+			.container .checkmark:after {
+				left: 9px;
+				top: 5px;
+				width: 5px;
+				height: 10px;
+				border: solid white;
+				border-width: 0 3px 3px 0;
+				-webkit-transform: rotate(45deg);
+				-ms-transform: rotate(45deg);
+				transform: rotate(45deg);
+			}
+
+			body {
+				background-image: url("Asset/bk.gif");
+				background-repeat: no-repeat;
+				background-attachment: fixed;
+				background-size: cover;
+				background-position: center;
+				font-family: Arial;
+				color: white;
+			}
+
+			section{
+				max-width: 1000px;
+				margin: 8px auto;
+				background: rgba(0,0,0,0.3);
+			}
+
+			h1{
+				margin: 10px;
+				font-size: 45px
+			}
+
+			h2{
+				margin: 20px 10px;
+			}
+
+			.selectable:hover{
+				color: rgba(100,100,100,1);
+			}
+
+			.tab {
+				margin-left: 40px;
+				color: rgba(200,200,200);
+			}
+
+			hr {
+				margin: 8px 10px;
+				color: white;
+			}
+
+			.sub{
+				margin-left: 20px;
+			}
+
+			input[type=submit]{
+				margin-left:15px;
+				padding: 10px 15px;
+				border-radius: 20px;
+				background: rgba(0,0,0,0.4);
+				font-size: 20px;
+				color: white;
+				border: 3px solid white;
+				margin-bottom: 34px
+			}
+
+			input[type=submit]:active{
+				background: rgba(255,255,255,0.6);
+			}
+
+			input[type=submit]:hover{
+				background: rgba(255,255,255,0.3);
+			}
+		</style>
+		<script type="text/javascript">
+			function goto(adres){
+				window.location.href = adres;
+			}
+		</script>
+	</head>
+	<body>
+		<section>
+			<h1>
+				Club Leader Menu
+			</h1>
+			<hr>
+			<section style="background: rgba(0,0,0,0); margin: 0px 30px">
+				{%for i in dic%}
+				<h2 class="selectable tab" onclick="goto('../Checkin/{{i}}')">
+					{{dic[i]}} Check in
+				</h2><br>
+				<h2 class="selectable tab" onclick="goto('../Manage/{{i}}')">
+					{{dic[i]}} Manage
+				</h2>
+				{%end%}
+			</section>
+		</section>
+	</body>
