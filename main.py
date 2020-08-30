@@ -43,6 +43,7 @@ class MainHandler(BaseHandler):
 
 class AdminPageHandler(BaseHandler):
 	def get(self):
+		global Data
 		if self.get_permission_level() != 0:
 			self.redirect("/login")
 		try:
@@ -50,21 +51,48 @@ class AdminPageHandler(BaseHandler):
 			self.clear_cookie("temp")
 		except:
 			pass
-		self.render("html/Admin.html")
+		li = Data["id_Data"][self.get_User_id()]["Lead"]
+		di = {}
+		for i in li:
+			di[i] = Data["Clubs"][i]["Name"]
+		self.render("html/Admin.html",di=di)
 	def post(self):
 		self.set_secure_cookie("auto_login","0")
 		self.redirect("/login")
 
-class TestCheckinHandler(BaseHandler):
-	def get(self):
+class CheckinHandler(BaseHandler):
+	def get(self,a):
+		global Data
+		try:
+			a = int(a)
+		except:
+			return
+		global Data
 		if self.get_permission_level() != 0:
 			self.redirect("/login")
-		User_Name = str(self.current_user,"utf-8")
-		Students = ["asdasda a", "asdasfasfasfa b","asdasdasdasdas c","asdasdasdasdasd D"]
+		if a not in Data["id_Data"][self.get_User_id()]["Lead"]:
+			self.redirect("/notice/No Permission/Just leave this page/Admin/Go back")
+			return
+		Students = Data["Clubs"][a]["students"][get_day()]
 		Students.sort()
-		Club_Name = "CS Club"
-		self.render("html/Students-Check-in.html",list=Students,Title=Club_Name)
-	def post(self):
+		di = {}
+		for s in Students:
+			di[s] = Data["id_Name"][s]
+		Club_Name = Data["Clubs"][a]["Name"]
+		self.render("html/Students-Check-in.html",di=di,Title=Club_Name)
+	def post(self,a):
+		global Temp
+		try:
+			a = int(a)
+		except:
+			return
+		Temp[a] = []
+		for i in Data["Clubs"][a]["students"][get_day()]:
+			try:
+				self.get_argument(str(i))
+			except:
+				Temp[a].append(i)
+		print(Temp)
 		print("...I dnot really know if it do success")
 		print("Just assume it is.")
 		self.redirect("/Admin")
@@ -130,7 +158,7 @@ class PasswordChangeHandler(BaseHandler):
 			return
 		Data["id_Data"][self.get_User_id()]["Pswd"] = self.get_argument("new_p")
 		if self.get_permission_level() == 0:
-			self.redirect("/Admin")
+			self.redirect("/Admin")	
 			return
 		self.redirect("/index")
 
@@ -315,17 +343,20 @@ def add_student_to_club(Club_id,student_id,day):
 	global Data
 	Data["Clubs"][Club_id]["students"][day].append(student_id)
 
+def get_day():
+	return 2
+
 Data = {"Name_id":{},"id_Name":{},"id_Data":{},"Avlb":[0], "Clubs":{}}
+Temp = {}
 
 New_Student("Admin")
 New_Student("TonyZhaChuanming")
+New_Student("EthanChangWuji")
 New_Student("JoshAntonio")
 Data_Modify("JoshAntonio","PmLv",2)
 Data_Modify("Admin","PmLv",0)
 
-new_Club("CS Club",1,0,[2,4])
-
-
+new_Club("CS Club",3,1,[2,4])
 
 print(Data)
 
@@ -342,7 +373,7 @@ if True:
 		(r"/Admin",AdminPageHandler),
 		(r"/Admin/ClubCreating",AdminPageHandler),
 		(r"/index",IndexHandler),
-		(r"/TestCheckin",TestCheckinHandler),
+		(r"/Checkin/(.*)",CheckinHandler),
 		(r"/Asset/(.*)",tornado.web.StaticFileHandler, {"path":"./Asset"}),
 		(r"/ECACreation",ECACreationHandler),
 		(r"/PasswordChange", PasswordChangeHandler),
