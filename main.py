@@ -82,8 +82,6 @@ class ManageHandler(BaseHandler):
 			a = int(a)
 		except:
 			return
-		if self.get_permission_level() == 0:
-			self.redirect("/Admin")
 		if a not in Data["id_Data"][self.get_User_id()]["Lead"]:
 			self.redirect("/notice/No Permission/Just leave this page/Admin/Go back")
 			return
@@ -97,12 +95,18 @@ class ManageHandler(BaseHandler):
 		Students = Data["Clubs"][a]["students"][get_day()]
 		Students.sort()
 		dic = {}
+		lead = {}
 		for i in Students:
 			dic[i] = Data["id_Name"][i]
+			lead[i] = a in Data["id_Data"][i]["Lead"]
+		print(lead)
 		Club_Name = Data["Clubs"][a]["Name"]
-		self.render("html/Students-Management.html",dic=dic,Title=Club_Name)
+		self.render("html/Students-Management.html",dic=dic,Title=Club_Name,lead=lead,l=self.get_permission_level() == 0)
 	def post(self,a):
 		global Data
+		if int(a) not in Data["id_Data"][self.get_User_id()]["Lead"]:
+			self.redirect("/notice/No Permission/Just leave this page/Admin/Go back")
+			return
 		try:
 			self.get_argument("search_student")
 			self.redirect("/Search/" +str(int(a)+3)+ "/ ")
@@ -112,12 +116,26 @@ class ManageHandler(BaseHandler):
 		print(Data["Clubs"][int(a)]["students"][get_day()])
 		for i in Data["Clubs"][int(a)]["students"][get_day()]:
 			try:
-				print(i,type(i))
 				self.get_argument(str(i))
 				Remove_Member(i, int(a),get_day())
+				break
 			except:
 				pass
-		self.redirect("/MainPage")
+		for i in Data["Clubs"][int(a)]["students"][get_day()]:
+			try:
+				self.get_argument("l"+str(i))
+				new_leader_of_club(int(a),i)
+				break
+			except:
+				pass
+		print(Data)
+		try:
+			self.get_argument("submit")
+			self.redirect("/MainPage")
+			return
+		except:
+			pass
+		self.redirect("")
 
 class CheckinHandler(BaseHandler):
 	def get(self,a):
@@ -337,6 +355,7 @@ class ClubManageHandler(BaseHandler):
 		except:
 			return
 		if a not in Data["id_Data"][self.get_User_id()]["Lead"]:
+			print(Data["id_Data"][self.get_User_id()],a)
 			self.redirect("/notice/No Permission/Just leave this page/Admin/Go back")
 			return
 		s = Data["Clubs"][a]["students"]
@@ -438,6 +457,11 @@ def add_student_to_club(Club_id,student_id,day):
 
 def get_day():
 	return 2
+
+def new_leader_of_club(Club_id,student_id):
+	if Club_id in Data["id_Data"][student_id]["Lead"]:
+		return
+	Data["id_Data"][student_id]["Lead"].append(Club_id)
 
 Data = {"Name_id":{},"id_Name":{},"id_Data":{},"Avlb":[0], "Clubs":{}}
 Temp = {}

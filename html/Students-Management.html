@@ -162,10 +162,18 @@
 			<hr>
 			<form style="font-size: 30px" method="post">
 				{% for i in dic %}
-					<p style="float:left; width:40%">
+					<p style="float:left; width:40%; margin-left: 40px;">
 						{{ dic[i] }}
 					</p>
-					<input type = "submit" value = "delete" name = {{i}} style="float:left;">
+					<input type = "submit" value = "delete" name = "{{i}}" style="float:left;">
+					{% if l %}
+						<input type = "submit" value = "Lead" name = "l{{i}}" style="float:left;">
+					{% end %}
+					{% if lead[i] %}
+					<p style="float:left; max-width:10%; margin-left: 40px;">
+						Leader
+					</p>
+					{% end %}
 					<div style="clear:both"></div>
 				{%end%}
 				<input type="submit" value="Add Member" name="search_student">

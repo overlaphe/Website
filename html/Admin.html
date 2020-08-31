@@ -192,6 +192,16 @@
 						<h2>
 					{% end %}
 				{% end %}
+				{% if di.__len__() != 0 %}
+					<h2>
+						Club Manage:	
+					</h2>
+					{% for i in di%}
+						<h2 class="selectable tab" onclick="goto('../Manage/{{i}}')">
+							{{di[i]}}
+						<h2>
+					{% end %}
+				{% end %}
 			</section>
 			</div>
 		</section>
