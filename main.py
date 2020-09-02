@@ -234,6 +234,18 @@ def Remove_Student(Name):
 	Data["Avlb"].append(id)
 	Data["Avlb"].sort()
 
+def Avail_student(day):
+	global Data
+	ret = []
+	for i in Data['id_Data']:
+		if day in Data['id_Data'][i]['avai']:
+			ret.append(i)
+	return ret
+
+def Remove_Avail(id, day):
+	global Data
+	Data['id_Data'][id]['avai'].remove(day)
+
 def Data_read(id):
 	global Data
 	if type(id) == str:
@@ -276,11 +288,44 @@ def Search(ty, string):
 		return [[-1," "]]
 	return ret
 
+<<<<<<< Updated upstream
 Data = {"Name_id":{},"id_Name":{},"id_Data":{},"Avlb":[0]}
+=======
+def new_Club(Name,advisor,leader,days):
+	global Data
+	target_id = None
+	if len(Data["Clubs"]) == 0:
+		target_id = 0
+	else:
+		target_id = max(Data["Clubs"]) + 1
+	Data["Clubs"][target_id] = {}
+	Data["Clubs"][target_id]["Name"] = Name
+	Data["Clubs"][target_id]["advisor"] = advisor
+	Data["Clubs"][target_id]["leader"] = leader
+	Data["Clubs"][target_id]["students"] = {}
+	Data["id_Data"][0]["Lead"].append(target_id)
+	Data["id_Data"][advisor]["Lead"].append(target_id)
+	Data["id_Data"][leader]["Lead"].append(target_id)
+	for day in days:
+		Data["Clubs"][target_id]["students"][day] = []
+		add_student_to_club(target_id,leader,day)
+		Remove_Avail(leader,day)
+
+def add_student_to_club(Club_id,student_id,day):
+	global Data
+	Data["Clubs"][Club_id]["students"][day].append(student_id)
+
+def get_day():
+	return 2
+
+Data = {"Name_id":{},"id_Name":{},"id_Data":{},"Avlb":[0], "Clubs":{}}
+Temp = {}
+>>>>>>> Stashed changes
 
 New_Student("Admin")
 New_Student("TonyZhaChuanming")
 Data_Modify("Admin","PmLv",0)
+Data_Modify("TonyZhaChuanming","Avai",[1,3])
 
 Search(1," ")
 
