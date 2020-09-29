@@ -2,7 +2,7 @@
 
 import sys
 
-sys.path.append('/home/Server/.local/lib/python3.8/site-packages')
+sys.path.append('/home/WebLinux/.local/lib/python3.8/site-packages')
 
 import tornado.ioloop
 import tornado.web
@@ -54,7 +54,8 @@ class AdminPageHandler(BaseHandler):
 		li = Data["id_Data"][self.get_User_id()]["Lead"]
 		di = {}
 		for i in li:
-			di[i] = Data["Clubs"][i]["Name"]
+			if get_day() in Data["Clubs"][i]["students"]:
+				di[i] = Data["Clubs"][i]["Name"]
 		self.render("html/Admin.html",di=di)
 	def post(self):
 		self.set_secure_cookie("auto_login","0")
@@ -69,7 +70,8 @@ class StandardHandler(BaseHandler):
 		li = Data["id_Data"][self.get_User_id()]["Lead"]
 		for i in li:
 			if Data["id_Name"][Data["Clubs"][i]["leader"]]:
-				di[i] = Data["Clubs"][i]["Name"]
+				if get_day() in Data["Clubs"][i]["students"]:
+					di[i] = Data["Clubs"][i]["Name"]
 		self.render("html/StandardUser.html", user = self.get_current_user(), dic=di)
 	def post(self):
 		self.set_secure_cookie("auto_login","0")
@@ -147,6 +149,7 @@ class CheckinHandler(BaseHandler):
 		if a not in Data["id_Data"][self.get_User_id()]["Lead"]:
 			self.redirect("/notice/No Permission/Just leave this page/Admin/Go back")
 			return
+		print(Data["Clubs"][a]["students"])
 		Students = Data["Clubs"][a]["students"][get_day()]
 		Students.sort()
 		di = {}
@@ -365,10 +368,19 @@ class NoticeHandler(BaseHandler):
 	def get(self,a,b,c,d):
 		self.render("html/notice.html", title = a, des = b, url="/"+c, text=d)
 
+class FeedBackHandler(BaseHandler):
+	def get(self):
+		self.write("<form method=\"post\"><input type=\"text\" name=\"str\" placeholder=\" Feedback...\"><input type=\"submit\" value=\"submit\"></form>")
+	def post(self):
+		print(self.get_argument("str")) 
+		self.redirect("")
+
+
 def Remove_Member(member_id,club_id,day):
 	#
 	global Data
 	Data["Clubs"][club_id]["students"][day].remove(member_id)
+	Data["id_Data"][id]["Lead"].remove(club_id)
 
 def New_Student(Name):
 	global Data
@@ -409,10 +421,15 @@ def Data_Modify(id,Key,Content):
 	Data["id_Data"][id][Key] = Content
 
 def Auto_Save():
-	global Data
+	global Data, Temp
 	while True:
 		pickle.dump(Data, open("Data","wb"))
 		time.sleep(60)
+		f = time.localtime()
+		n = f.tm_hour*3600+f.tm_min*60+f.tm_sec
+		if n > 58500 and n < 58570:
+			pickle.dump(Temp,open("%s-%sdata"%(f.tm_mon,f.tm_mday),"wb"))
+			Temp = {}
 
 def Search(ty, string):
 	if ty == 0 or string == " " or string == "":
@@ -455,8 +472,10 @@ def add_student_to_club(Club_id,student_id,day):
 	global Data
 	Data["Clubs"][Club_id]["students"][day].append(student_id)
 
+
+
 def get_day():
-	return 2
+	return time.localtime().tm_wday+1
 
 def new_leader_of_club(Club_id,student_id):
 	if Club_id in Data["id_Data"][student_id]["Lead"]:
@@ -464,23 +483,13 @@ def new_leader_of_club(Club_id,student_id):
 	Data["id_Data"][student_id]["Lead"].append(Club_id)
 
 Data = {"Name_id":{},"id_Name":{},"id_Data":{},"Avlb":[0], "Clubs":{}}
+if True:
+	Data = pickle.load(open("Data","rb"))
 Temp = {}
-
-New_Student("Admin")
-New_Student("TonyZhaChuanming")
-New_Student("EthanChangWuji")
-New_Student("JoshAntonio")
-Data_Modify("JoshAntonio","PmLv",2)
-Data_Modify("Admin","PmLv",0)
-
-new_Club("CS Club",3,1,[2,4])
-
-print(Data)
 
 """
 To Do list:
-	make a template for notion
-	make a more aligned shit
+	test
 """
 
 if True:
@@ -500,6 +509,7 @@ if True:
 		(r"/Attendence",AttendenceHandler),
 		(r"/MainPage",MainPageHandler),
 		(r"/Search/(.*)/(.*)",SearchHandler),
+		(r"/Feedback",FeedBackHandler),
 		(r"/notice/(.*)/(.*)/(.*)/(.*)",NoticeHandler)],
 	cookie_secret="1234567")
 	server = tornado.httpserver.HTTPServer(app)
