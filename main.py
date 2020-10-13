@@ -68,13 +68,14 @@ class StandardHandler(BaseHandler):
 		global Data
 		if self.get_permission_level() == 0:
 			self.redirect("/Admin")
+		li = {}
+		for i in Data["id_Data"][self.get_User_id()]["Lead"]:
+			li[i] = Data["Clubs"][i]["Name"]
 		di = {}
-		li = Data["id_Data"][self.get_User_id()]["Lead"]
 		for i in li:
-			if Data["id_Name"][Data["Clubs"][i]["leader"]]:
-				if get_day() in Data["Clubs"][i]["students"]:
-					di[i] = Data["Clubs"][i]["Name"]
-		self.render("html/StandardUser.html", user = self.get_current_user(), dic=di)
+			if get_day() in Data["Clubs"][i]["students"]:
+				di[i] = Data["Clubs"][i]["Name"]
+		self.render("html/StandardUser.html", user = self.get_current_user(), di=di,li=li)
 	def post(self):
 		self.set_secure_cookie("auto_login","0")
 		self.redirect("/login")

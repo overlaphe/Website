@@ -161,15 +161,26 @@
 			</h1>
 			<hr>
 			<section style="background: rgba(0,0,0,0); margin: 0px 30px">
-				{%for i in dic%}
-				<h2 class="selectable tab" onclick="goto('../Checkin/{{i}}')">
-					{{dic[i]}} Check in
-				</h2><br>
-				<h2 class="selectable tab" onclick="goto('../Manage/{{i}}')">
-					{{dic[i]}} Manage
+				<h2>
+					Attendance Check-in:	
 				</h2>
-				<br>
-				{%end%}
+				{% if di.__len__() != 0 %}
+					{% for i in di%}
+						<h2 class="selectable tab" onclick="goto('../Checkin/{{i}}')">
+							{{di[i]}}
+						<h2>
+					{% end %}
+				{% end %}
+				<h2>
+						Club Manage:
+				</h2>
+				{% if li.__len__() != 0 %}
+					{% for i in li%}
+						<h2 class="selectable tab" onclick="goto('../Manage/{{i}}')">
+							{{li[i]}}
+						<h2>
+					{% end %}
+				{% end %}
 				<h2 class="selectable tab" onclick="goto('/PasswordChange')">
 					Change password
 				</h2>
