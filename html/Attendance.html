@@ -1,22 +1,19 @@
 <!DOCTYPE html>
 <html>
-	<head>
-		<title>
-			...
-		</title>
-		<style>
-			p{
-				font-size: 30px;
-				margin: 8px;
-			}
+<head>
+	<title>
+		Attendance
+	</title>
+	<style type="text/css">
 			label{
 				margin-left: 15px;
 			}
+
 			.container {
 				display: block;
 				position: relative;
 				padding-left: 35px;
-				margin-bottom: 12px;
+				margin-bottom: 0px;
 				cursor: pointer;
 				font-size: 22px;
 				-webkit-user-select: none;
@@ -26,13 +23,19 @@
 			}
 
 			/* Hide the browser's default checkbox */
-			.container input {
+			.container m {
 				margin-left:15px;
 				position: absolute;
 				opacity: 0;
 				cursor: pointer;
 				height: 0;
 				width: 0;
+			}
+
+			.container p{
+				font-size: 30px;
+				margin: 8px;
+				font-family: Arial;
 			}
 
 			/* Create a custom checkbox */
@@ -48,17 +51,26 @@
 			}
 
 			/* On mouse-over, add a grey background color */
-			.container:hover input ~ .checkmark {
+			.container:hover m + .checkmark {
 				background-color: rgb(255,0,0,0.3);
 			}
 
 			/* When the checkbox is checked, add a blue background */
-			.container input:checked ~ .checkmark {
+			.container m[state="P"] ~ .checkmark {
 				background-color: rgb(76,187,23,0.8);
 			}
 
-			.container:hover input:checked ~ .checkmark {
+			.container:hover m[state="P"] ~ .checkmark {
 				background-color: rgba(76,187,23,0.3);
+			}
+
+			/* When the checkbox is checked, add a blue background */
+			.container m[state="T"] ~ .checkmark {
+				background-color: rgb(250,200,10,0.8);
+			}
+
+			.container:hover m[state="T"] ~ .checkmark {
+				background-color: rgba(250,200,10,0.3);
 			}
 
 			/* Create the checkmark/indicator (hidden when not checked) */
@@ -69,7 +81,11 @@
 			}
 
 			/* Show the checkmark when checked */
-			.container input:checked ~ .checkmark:after {
+			.container m[state="P"] ~ .checkmark:after {
+				display: block;
+			}
+
+			.container m[state="T"] ~ .checkmark:after {
 				display: block;
 			}
 
@@ -85,9 +101,8 @@
 				-ms-transform: rotate(45deg);
 				transform: rotate(45deg);
 			}
-
 			body {
-				background-image: url("Asset/bk.gif");
+				background-image: url("/Asset/bk.gif");
 				background-repeat: no-repeat;
 				background-attachment: fixed;
 				background-size: cover;
@@ -122,14 +137,13 @@
 
 			hr {
 				margin: 8px 10px;
-				color: white;
 			}
 
 			.sub{
 				margin-left: 20px;
 			}
 
-			input[type=submit]{
+			button{
 				margin-left:15px;
 				padding: 10px 15px;
 				border-radius: 20px;
@@ -140,70 +154,73 @@
 				margin-bottom: 34px
 			}
 
-			input[type=submit]:active{
+			button:active{
 				background: rgba(255,255,255,0.6);
 			}
 
-			input[type=submit]:hover{
+			button:hover{
 				background: rgba(255,255,255,0.3);
 			}
-		</style>
-		<script type="text/javascript">
-			function goto(adres){
-				window.location.href = adres;
+	</style>
+	<script type="text/javascript">
+		function changeState(id){
+			E = document.getElementById(id);
+			A = E.getAttribute("state")
+			if (A == 'A'){
+				E.setAttribute("state","P")
+			}else if(A == "P"){
+				E.setAttribute("state","T")
+			}else{
+				E.setAttribute("state","A")
 			}
-		</script>
-	</head>
+			return 0;
+		}
+		function post(path='/Checkin/{{Club_id}}', method='post') {
+			const form = document.createElement('form');
+			form.method = method;
+			form.action = path;
+
+			for (i = 0; i < {{ len(di) }}; i++){
+				E = document.getElementById(i);
+
+				const hiddenField = document.createElement('input');
+				hiddenField.type = 'hidden';
+				hiddenField.name = E.getAttribute("uid");
+				if (E.getAttribute("state") == "A"){
+					hiddenField.value = "A";
+				}else if (E.getAttribute("state") == "T"){
+					hiddenField.value = "T";
+				}else{
+					hiddenField.value = "P";
+				}
+				form.appendChild(hiddenField);
+			}
+
+			document.body.appendChild(form);
+			form.submit();
+		}
+	</script>
+</head>
+<body style="background-color: black">
 	<body>
 		<section>
 			<h1>
-				Admin Menu
+				Students Check-in:
+				{{ Title }}
 			</h1>
 			<hr>
-			<section style="background: rgba(0,0,0,0); margin: 0px 30px">
-				<h2>
-					Admin Menu:
-				</h2>
-				<h2 class="selectable tab" onclick="goto('../ECACreation')">
-					ECA Create
-				</h2>
-				<h2>
-					Managing:
-				</h2>
-				<h2 class="selectable tab" onclick="goto('../Attendence')">
-					Attendance
-				</h2>
-				<h2>
-					Account Settings:	
-				</h2>
-				<h2 class="selectable tab" onclick="goto('../PasswordChange')">
-					Change Password
-				</h2>
-				<h2 class="selectable tab" onclick="goto('../login')">
-					Log out
-				<h2>
-				{% if di.__len__() != 0 %}
-					<h2>
-						Attendance Check-in:	
-					</h2>
-					{% for i in di%}
-						<h2 class="selectable tab" onclick="goto('../Checkin/{{i}}')">
-							{{di[i]}}
-						<h2>
-					{% end %}
-				{% end %}
-				{% if li.__len__() != 0 %}
-					<h2>
-						Club Manage:
-					</h2>
-					{% for i in li%}
-						<h2 class="selectable tab" onclick="goto('../Manage/{{i}}')">
-							{{li[i]}}
-						<h2>
-					{% end %}
-				{% end %}
-			</section>
+			{% for i,j in enumerate(di) %}
+				<label class="container">
+					<p onclick="changeState({{i}})">
+						{{ di[j] }}
+					</p>
+					<m id="{{i}}" style = "color: red" state="A" uid="{{j}}"></m>
+					<span class="checkmark" onclick="changeState({{i}})"></span>
+				</label>
+			{% end %}
+			<button onclick="post()">submit</button>
 			</div>
 		</section>
 	</body>
+</body>
 </html>

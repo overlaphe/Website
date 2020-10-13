@@ -51,12 +51,14 @@ class AdminPageHandler(BaseHandler):
 			self.clear_cookie("temp")
 		except:
 			pass
-		li = Data["id_Data"][self.get_User_id()]["Lead"]
+		li = {}
+		for i in Data["id_Data"][self.get_User_id()]["Lead"]:
+			li[i] = Data["Clubs"][i]["Name"]
 		di = {}
 		for i in li:
 			if get_day() in Data["Clubs"][i]["students"]:
 				di[i] = Data["Clubs"][i]["Name"]
-		self.render("html/Admin.html",di=di)
+		self.render("html/Admin.html",di=di,li=li)
 	def post(self):
 		self.set_secure_cookie("auto_login","0")
 		self.redirect("/login")
@@ -90,54 +92,66 @@ class ManageHandler(BaseHandler):
 		try:
 			f = self.get_secure_cookie("temp")
 			f = eval(f)
-			add_student_to_club(int(a),f[str(int(a)+3)],get_day())
+			add_student_to_club(a,f["member"],int(f["day"]))
+			print("fin")
 			self.clear_cookie("temp")
 		except:
 			pass
-		Students = Data["Clubs"][a]["students"][get_day()]
-		Students.sort()
+		Students = Data["Clubs"][a]["students"]
+		for i in Students:
+			Students[i].sort()
 		dic = {}
 		lead = {}
 		for i in Students:
-			dic[i] = Data["id_Name"][i]
-			lead[i] = a in Data["id_Data"][i]["Lead"]
-		print(lead)
+			dic[i] = {}
+			lead[i] = {}
+			for j in Students[i]:
+				dic[i][j] = Data["id_Name"][j]
+				lead[i][j] = a in Data["id_Data"][j]["Lead"]
+		print(dic,lead)
 		Club_Name = Data["Clubs"][a]["Name"]
-		self.render("html/Students-Management.html",dic=dic,Title=Club_Name,lead=lead,l=self.get_permission_level() == 0)
+		self.render("html/Students-Management-new.html",dic=dic,Title=Club_Name,lead=lead,l=self.get_permission_level() == 0)
 	def post(self,a):
 		global Data
 		if int(a) not in Data["id_Data"][self.get_User_id()]["Lead"]:
 			self.redirect("/notice/No Permission/Just leave this page/Admin/Go back")
 			return
 		try:
-			self.get_argument("search_student")
-			self.redirect("/Search/" +str(int(a)+3)+ "/ ")
-			return
-		except:
-			pass
-		print(Data["Clubs"][int(a)]["students"][get_day()])
-		for i in Data["Clubs"][int(a)]["students"][get_day()]:
-			try:
-				self.get_argument(str(i))
-				Remove_Member(i, int(a),get_day())
-				break
-			except:
-				pass
-		for i in Data["Clubs"][int(a)]["students"][get_day()]:
-			try:
-				self.get_argument("l"+str(i))
-				new_leader_of_club(int(a),i)
-				break
-			except:
-				pass
-		print(Data)
-		try:
 			self.get_argument("submit")
 			self.redirect("/MainPage")
 			return
 		except:
 			pass
+		f = int(self.get_argument("day"))
+		try:
+			self.get_argument("search_student")
+			self.redirect("/MemberAdd/%s/%s/ "%(int(a),f))
+			return	
+		except:
+			pass
+		for i in Data["Clubs"][int(a)]["students"][f]:
+			try:
+				self.get_argument(str(i))
+				Remove_Member(i, int(a),f)
+				break
+			except:
+				pass
+		for i in Data["Clubs"][int(a)]["students"][f]:
+			try:
+				print("?adada",i)
+				self.get_argument("l"+str(i))
+				print("?adadab",i)
+				print(Data["id_Data"][i]["Lead"])
+				if int(a) in Data["id_Data"][i]["Lead"]:
+					del Data["id_Data"][i]["Lead"][Data["id_Data"][i]["Lead"].index(int(a))]
+				else:
+					Data["id_Data"][i]["Lead"].append(int(a))
+				print(Data["id_Data"][i]["Lead"])
+				break
+			except:
+				pass
 		self.redirect("")
+		print("?")
 
 class CheckinHandler(BaseHandler):
 	def get(self,a):
@@ -323,6 +337,25 @@ class SearchHandler(BaseHandler):
 		else:
 			self.redirect("/Manage/" + str(int(g)-3))
 
+class MemberSearchHandler(BaseHandler):
+	def get(self, club_id, day, s):
+		m = Search(1,s)
+		print(m)
+		self.render("html/memberSearch.html",list=m,a=1)
+	def post(self, club_id, day, s):
+		print("?",club_id, day, s)
+		try:
+			text = self.get_argument("T")
+			self.redirect("/MemberAdd/%s/%s/%s"%(club_id,day,text))
+			return
+		except:
+			pass
+		temp = {"day":day,"member":int(self.get_argument("i"))}
+		print(temp)
+		self.set_secure_cookie("temp",str(temp))
+		self.redirect("/Manage/%s"%club_id)
+		print("?")
+
 class MainPageHandler(BaseHandler):
 	def get(self):
 		if self.get_permission_level() == 0:
@@ -372,7 +405,7 @@ class FeedBackHandler(BaseHandler):
 	def get(self):
 		self.write("<form method=\"post\"><input type=\"text\" name=\"str\" placeholder=\" Feedback...\"><input type=\"submit\" value=\"submit\"></form>")
 	def post(self):
-		print(self.get_argument("str")) 
+		print(self.get_argument("str"))
 		self.redirect("")
 
 
@@ -472,20 +505,20 @@ def add_student_to_club(Club_id,student_id,day):
 	global Data
 	Data["Clubs"][Club_id]["students"][day].append(student_id)
 
-
-
-def get_day():
-	return time.localtime().tm_wday+1
-
 def new_leader_of_club(Club_id,student_id):
 	if Club_id in Data["id_Data"][student_id]["Lead"]:
 		return
 	Data["id_Data"][student_id]["Lead"].append(Club_id)
 
+def get_day():
+	return time.localtime().tm_wday+1
+
 Data = {"Name_id":{},"id_Name":{},"id_Data":{},"Avlb":[0], "Clubs":{}}
 if True:
 	Data = pickle.load(open("Data","rb"))
 Temp = {}
+New_Student("Teacher")
+Data_Modify("Teacher","PmLv",2)
 
 """
 To Do list:
@@ -496,8 +529,6 @@ To Do list:
 	User for teachers
 		One teacher, one account
 	More formal Feedback page
-		Just, make some decoration
-	More formal searching page
 		Just, make some decoration
 	About page?(need discussion)
 	Empty home page
@@ -521,7 +552,8 @@ if True:
 		(r"/MainPage",MainPageHandler),
 		(r"/Search/(.*)/(.*)",SearchHandler),
 		(r"/Feedback",FeedBackHandler),
-		(r"/notice/(.*)/(.*)/(.*)/(.*)",NoticeHandler)],
+		(r"/notice/(.*)/(.*)/(.*)/(.*)",NoticeHandler),
+		(r"/MemberAdd/(.*)/(.*)/(.*)",MemberSearchHandler)],
 	cookie_secret="1234567")
 	server = tornado.httpserver.HTTPServer(app)
 	server.listen(8800)
