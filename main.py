@@ -156,22 +156,22 @@ class CheckinHandler(BaseHandler):
 		for s in Students:
 			di[s] = Data["id_Name"][s]
 		Club_Name = Data["Clubs"][a]["Name"]
-		self.render("html/Students-Check-in.html",di=di,Title=Club_Name)
+		print(di,"?")
+		self.render("html/Attendance.html",di=di,Title=Club_Name,Club_id=a)
 	def post(self,a):
 		global Temp
 		try:
 			a = int(a)
 		except:
 			return
-		Temp[a] = []
+		Temp[a] = {}
 		for i in Data["Clubs"][a]["students"][get_day()]:
-			try:
-				self.get_argument(str(i))
-			except:
-				Temp[a].append(i)
+			m = self.get_argument(str(i))
+			if m == "A":
+				Temp[a][i] = "A"
+			elif m == "T":
+				Temp[a][i] = "T"
 		print(Temp)
-		print("...I dnot really know if it do success")
-		print("Just assume it is.")
 		self.redirect("/MainPage")
 
 class SubmitHandler(BaseHandler):
@@ -489,7 +489,18 @@ Temp = {}
 
 """
 To Do list:
-	test
+	Three types of attendence
+		Click once, turn green (present)
+		Click twice, turn yellow (tardy)
+		Click thrice, turn back to red (absent)
+	User for teachers
+		One teacher, one account
+	More formal Feedback page
+		Just, make some decoration
+	More formal searching page
+		Just, make some decoration
+	About page?(need discussion)
+	Empty home page
 """
 
 if True:

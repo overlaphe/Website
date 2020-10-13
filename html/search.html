@@ -131,8 +131,8 @@
 
 		input[type=submit]{
 			margin-left:15px;
-			padding: 10px 15px;
-			border-radius: 20px;
+			padding: 10px 30px;
+			border-radius: 25px;
 			background: rgba(0,0,0,0.4);
 			font-size: 20px;
 			color: white;
@@ -146,6 +146,20 @@
 
 		input[type=submit]:hover{
 			background: rgba(255,255,255,0.3);
+		}
+
+		input[type=text], input[type=password]{
+		  	margin-left: 0px;
+			margin-right: 0px;
+			width: 70%;
+			border-radius: 25px;
+			float: left;
+			padding: 5px 30px;
+			background: rgba(0,0,0,0);
+			font-size: 28px;
+			border: 3px solid white;
+			caret-color: white;
+			color: white;
 		}
 	</style>
 	<script type="text/javascript">
@@ -182,15 +196,22 @@
 		}
 	</script>
 	<body>
-		<form method="post">
-			<input type="text" name="T">
-			<input type="submit" value="Search">
-		</form>
-		{% for i in list %}
-		<p onclick="post('/Search/1/test',{j:{{type}}, i:{{ i[0] }}} )">
-			{{ i[1] }}
-		</p>
-		{% end %}
+		<section>
+			<h1>
+				Searching
+			</h1>
+			<hr>
+				<form method="post">
+					<input type="text" name="T">
+					<input type="submit" value="Search">
+				</form>
+				{% for i in list %}
+				<p onclick="post('/Search/1/test',{j:{{type}}, i:{{ i[0] }}} )">
+					{{ i[1] }}
+				</p>
+				{% end %}
+			</div>
+		</section>
 	</body>
 </head>
 </html>
