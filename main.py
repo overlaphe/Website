@@ -371,17 +371,21 @@ class AttendenceHandler(BaseHandler):
 		global Temp,Data
 		dicti = {}
 		for s in Data["Clubs"]:
+			if get_day() not in Data["Clubs"][s]["students"]:
+				continue
 			dicti[s]=[]
 			dicti[s].append(Data["Clubs"][s]["Name"])
 			li = []
 			if s in Temp:
 				dicti[s].append("checked")
 				for i in Temp[s]:
-					li.append(Data["id_Name"][i])
+					if Temp[s][i] == "A":
+						li.append(Data["id_Name"][i])
 			else:
 				dicti[s].append("unchecked")
 				li = []
 			dicti[s].append(li)
+		print(dicti)
 		self.render("html/Attendence.html",dicti=dicti)
 
 class ClubManageHandler(BaseHandler):

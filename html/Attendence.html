@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Attendence Check</title>
+	<link rel="stylesheet" type="text/css" href="/Asset/tem.css">
+	</head>
+	<section>
+		<h1>Attendence Data</h1>
+		<hr>
+		<div style = "margin: 20px 30px">
+			<div style="width:20%; float:left">Club Names</div>
+			<div style="width:20%; float:left">Checked State</div>
+			<div style="width:40%; float:left">Absent&nbsp;Ones</div>
+		</div>
+		{%for i in dicti%}
+		<div style = "margin: 20px 30px">
+			<div style="width:20%; float:left">{{dicti[i][0]}}</div>
+			<div style="width:20%; float:left">{{dicti[i][1]}}</div>
+			{%for j in dicti[i][2]%}
+				<div style="clear:both"></div>
+				<div style="width: 40%; margin:8px 40px; float:left"></div>
+				<div style = "font-size: 15px; float:left; width: 50px">{{j}}</div>
+			{%end%}
+			<div style="clear:both"></div>
+		</div>
+		{%end%}
+	</section>
+</html>
