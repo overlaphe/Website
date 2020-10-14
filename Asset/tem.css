@@ -64,7 +64,7 @@ label{
 	transform: rotate(45deg);
 }
 body {
-	background-image: url("Asset/bk.gif");
+	background-image: url("/Asset/bk.gif");
 	background-repeat: no-repeat;
 	background-attachment: fixed;
 	background-size: cover;
@@ -158,4 +158,22 @@ input[type=submit]:hover{
 input[type=checkbox]{
     border-radius: 50%;
     box-sizing: inherit;
+}
+button{
+	margin-left:15px;
+	padding: 10px 15px;
+	border-radius: 20px;
+	background: rgba(0,0,0,0.4);
+	font-size: 20px;
+	color: white;
+	border: 3px solid white;
+	margin-bottom: 34px
+}
+
+button:active{
+	background: rgba(255,255,255,0.6);
+}
+
+button:hover{
+	background: rgba(255,255,255,0.3);
 }
