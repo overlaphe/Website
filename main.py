@@ -41,6 +41,13 @@ class MainHandler(BaseHandler):
 	def get(self):
 		self.redirect("/login")
 
+class NewStudentHandler(BaseHandler):
+	def get(self):
+		self.render("html/NewStudent.html")
+	def post(self):
+		New_Student(self.get_argument("Name"))
+		self.redirect("/notice/Succeed!/student created/Admin/Go back")
+
 class AdminPageHandler(BaseHandler):
 	def get(self):
 		global Data
@@ -56,7 +63,7 @@ class AdminPageHandler(BaseHandler):
 			li[i] = Data["Clubs"][i]["Name"]
 		di = {}
 		for i in li:
-			if get_day() in Data["Clubs"][i]["students"]:
+			if Data["Clubs"][i]["students"][get_day()] != []:
 				di[i] = Data["Clubs"][i]["Name"]
 		self.render("html/Admin.html",di=di,li=li)
 	def post(self):
@@ -156,7 +163,7 @@ class ManageHandler(BaseHandler):
 
 class CheckinHandler(BaseHandler):
 	def get(self,a):
-		global Data
+		global Data,Temp
 		try:
 			a = int(a)
 		except:
@@ -172,7 +179,17 @@ class CheckinHandler(BaseHandler):
 			di[s] = Data["id_Name"][s]
 		Club_Name = Data["Clubs"][a]["Name"]
 		print(di,"?")
-		self.render("html/Attendance.html",di=di,Title=Club_Name,Club_id=a)
+		att = {}
+		if a in Temp:
+			for i in Students:
+				if i in Temp[a]:
+					att[i] = Temp[a][i]
+				else:
+					att[i] = "P"
+		else:
+			for i in Students:
+				att[i] = "A"
+		self.render("html/Attendance.html",di=di,Title=Club_Name,Club_id=a,Att=att)
 	def post(self,a):
 		global Temp
 		try:
@@ -411,6 +428,7 @@ class FeedBackHandler(BaseHandler):
 		self.write("<form method=\"post\"><input type=\"text\" name=\"str\" placeholder=\" Feedback...\"><input type=\"submit\" value=\"submit\"></form>")
 	def post(self):
 		print(self.get_argument("str"))
+
 		self.redirect("")
 
 
@@ -462,7 +480,7 @@ def Auto_Save():
 	global Data, Temp
 	while True:
 		pickle.dump(Data, open("Data","wb"))
-		time.sleep(60)
+		time.sleep(1)
 		f = time.localtime()
 		n = f.tm_hour*3600+f.tm_min*60+f.tm_sec
 		if n > 58500 and n < 58570:
@@ -522,8 +540,6 @@ Data = {"Name_id":{},"id_Name":{},"id_Data":{},"Avlb":[0], "Clubs":{}}
 if True:
 	Data = pickle.load(open("Data","rb"))
 Temp = {}
-New_Student("Teacher")
-Data_Modify("Teacher","PmLv",2)
 
 """
 To Do list:
@@ -538,6 +554,12 @@ To Do list:
 	About page?(need discussion)
 	Empty home page
 """
+
+for i in Data["Clubs"]:
+	for j in [1,2,3,4]:
+		if j not in Data["Clubs"][i]["students"]:
+			Data["Clubs"][i]["students"][j] = []
+print(Data.keys())
 
 if True:
 	threading.Thread(target=Auto_Save).start()
@@ -558,8 +580,10 @@ if True:
 		(r"/Search/(.*)/(.*)",SearchHandler),
 		(r"/Feedback",FeedBackHandler),
 		(r"/notice/(.*)/(.*)/(.*)/(.*)",NoticeHandler),
+		(r"/NewStudent",NewStudentHandler),
 		(r"/MemberAdd/(.*)/(.*)/(.*)",MemberSearchHandler)],
 	cookie_secret="1234567")
 	server = tornado.httpserver.HTTPServer(app)
 	server.listen(8800)
 	tornado.ioloop.IOLoop.instance().start()
+	print("asdasdasd")
