@@ -543,16 +543,10 @@ Temp = {}
 
 """
 To Do list:
-	Three types of attendence
-		Click once, turn green (present)
-		Click twice, turn yellow (tardy)
-		Click thrice, turn back to red (absent)
-	User for teachers
-		One teacher, one account
-	More formal Feedback page
-		Just, make some decoration
-	About page?(need discussion)
-	Empty home page
+-修改网页视觉设计
+-修改登录方式，方便学生登陆
+-增加文章编辑
+-增加论坛
 """
 
 for i in Data["Clubs"]:
