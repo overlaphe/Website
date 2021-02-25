@@ -522,7 +522,8 @@ def new_Club(Name,advisor,leader,days):
 	Data["id_Data"][leader]["Lead"].append(target_id)
 	for day in days:
 		Data["Clubs"][target_id]["students"][day] = []
-		add_student_to_club(target_id,leader,day)
+		if leader != 0:
+			add_student_to_club(target_id,leader,day)
 
 def add_student_to_club(Club_id,student_id,day):
 	global Data
@@ -547,13 +548,8 @@ To Do list:
 -修改登录方式，方便学生登陆
 -增加文章编辑
 -增加论坛
+-优化运行效率
 """
-
-for i in Data["Clubs"]:
-	for j in [1,2,3,4]:
-		if j not in Data["Clubs"][i]["students"]:
-			Data["Clubs"][i]["students"][j] = []
-print(Data.keys())
 
 if True:
 	threading.Thread(target=Auto_Save).start()
