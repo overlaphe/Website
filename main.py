@@ -62,9 +62,10 @@ class AdminPageHandler(BaseHandler):
 		for i in Data["id_Data"][self.get_User_id()]["Lead"]:
 			li[i] = Data["Clubs"][i]["Name"]
 		di = {}
-		for i in li:
-			if Data["Clubs"][i]["students"][get_day()] != []:
-				di[i] = Data["Clubs"][i]["Name"]
+		if get_day() in [1,2,3,4]:
+			for i in li:
+				if Data["Clubs"][i]["students"][get_day()] != []:
+					di[i] = Data["Clubs"][i]["Name"]
 		self.render("html/Admin.html",di=di,li=li)
 	def post(self):
 		self.set_secure_cookie("auto_login","0")
@@ -537,10 +538,41 @@ def new_leader_of_club(Club_id,student_id):
 def get_day():
 	return time.localtime().tm_wday+1
 
-Data = {"Name_id":{},"id_Name":{},"id_Data":{},"Avlb":[0], "Clubs":{}}
-if True:
-	Data = pickle.load(open("Data","rb"))
+# Data = {"Name_id":{},"id_Name":{},"id_Data":{},"Avlb":[0], "Clubs":{}}
+# if False:
+# 	Data = pickle.load(open("Data","rb"))
+# Temp = {}
+
+# New_Student("Admin")
+# Data_Modify("Admin","PmLv",0)
+# Data_Modify("Admin","Pswd","Wanyuan2021")
+
+# f = open("test.CSV","r",encoding='utf-8').readlines()
+# clubs = []
+# for i in f[1:]:
+# 	i = i[:-1]
+# 	for j in i.split(",")[3:]:
+# 		if j not in clubs:
+# 			clubs.append(j)
+
+# for i in clubs:
+# 	new_Club(i,0,0,[1,2,3,4])
+
+# di = {}
+# for i,j in enumerate(clubs):
+# 	di[j]=i
+
+# for i in f[1:]:
+# 	i = i[:-1]
+# 	name = "".join(i.split(",")[:3]).replace(" ","")
+# 	New_Student(name)
+# 	for m,q in enumerate(i.split(",")[3::2]):
+# 		add_student_to_club(di[q],Data["Name_id"][name],m+1)
+
+# pickle.dump(Data, open("Data","wb"))
+Data = pickle.load(open("Data","rb"))
 Temp = {}
+# print(pickle.load(open("Data","rb")))
 
 """
 To Do list:
