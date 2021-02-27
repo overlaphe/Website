@@ -9,6 +9,14 @@
 			function goto(adres){
 				window.location.href = adres;
 			}
+
+			function post(path='/Admin', method='post') {
+				const form = document.createElement('form');
+				form.method = method;
+				form.action = path;
+				document.body.appendChild(form);
+				form.submit();
+			}
 		</script>
 	</head>
 	<body>
@@ -39,7 +47,7 @@
 				<h2 class="selectable tab" onclick="goto('../PasswordChange')">
 					Change Password
 				</h2>
-				<h2 class="selectable tab" onclick="goto('../login')">
+				<h2 class="selectable tab" onclick="post()">
 					Log out
 				<h2>
 				{% if di.__len__() != 0 %}
