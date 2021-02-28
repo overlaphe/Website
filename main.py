@@ -12,18 +12,19 @@ import pickle
 import time
 import threading
 import asyncio
+from Manager import *
 
 if sys.platform == 'win32':
 	asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
 class BaseHandler(tornado.web.RequestHandler):
+	global Data
 	def get_current_user(self):
 		return self.get_secure_cookie("user")
 	def get(self):
 		if not current_user:
 			self.redirect("/login")
 	def get_User_id(self):
-		global Data
 		try:
 			user = str(self.get_secure_cookie("user"),"utf-8")
 			if user in Data["Name_id"]:
@@ -31,7 +32,6 @@ class BaseHandler(tornado.web.RequestHandler):
 		except:
 			return -1
 	def get_permission_level(self):
-		global Data
 		id = self.get_User_id()
 		if id == -1:
 			return -1
@@ -432,6 +432,9 @@ class FeedBackHandler(BaseHandler):
 
 		self.redirect("")
 
+class HomepageHandler(BaseHandler):
+	def get(self):
+		self.render("")
 
 def Remove_Member(member_id,club_id,day):
 	#

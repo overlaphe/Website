@@ -175,12 +175,12 @@
 			}
 			return 0;
 		}
-		function post(path='/Checkin/{{Club_id}}', method='post') {
+		function post(path='/Checkin/{{club.id}}', method='post') {
 			const form = document.createElement('form');
 			form.method = method;
 			form.action = path;
 
-			for (i = 0; i < {{ len(di) }}; i++){
+			for (i = 0; i < {{ len(students) }}; i++){
 				E = document.getElementById(i);
 
 				const hiddenField = document.createElement('input');
@@ -206,15 +206,15 @@
 		<section>
 			<h1>
 				Students Check-in:
-				{{ Title }}
+				{{ club.name }}
 			</h1>
 			<hr>
-			{% for i,j in enumerate(di) %}
+			{% for i,student in enumerate(students) %}
 				<label class="container">
 					<p onclick="changeState({{i}})">
-						{{ di[j] }}
+						{{ student.name }}
 					</p>
-					<m id="{{i}}" style = "color: red" state="{{Att[j]}}" uid="{{j}}"></m>
+					<m id="{{i}}" style = "color: red" state="{{student.getStudentCurrentAtt(club)}}" uid="{{student.id}}"></m>
 					<span class="checkmark" onclick="changeState({{i}})"></span>
 				</label>
 			{% end %}
