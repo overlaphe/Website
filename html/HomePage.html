@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>
+			...
+		</title>
+		<link rel="stylesheet" type="text/css" href="/Asset/tem.css">
+		<script type="text/javascript">
+			function goto(adres){
+				window.location.href = adres;
+			}
+
+			function post(path='', method='post') {
+				const form = document.createElement('form');
+				form.method = method;
+				form.action = path;
+				document.body.appendChild(form);
+				form.submit();
+			}
+		</script>
+	</head>
+	<body>
+		<section>
+			<h1>
+				Home Page
+			</h1>
+			<hr>
+			<section style="background: rgba(0,0,0,0); margin: 0px 30px">
+				{% if User.permissionLevel != 0 %}
+					<h2>
+						Admin Menu:
+					</h2>
+					<h2 class="selectable tab" onclick="goto('../ECACreation')">
+						ECA Create
+					</h2>
+					<h2 class="selectable tab" onclick="goto('../Attendence')">
+						Attendance
+					</h2>
+					<h2 class="selectable tab" onclick="goto('../NewStudent')">
+						New Student
+					</h2>
+				{% end %}
+				<h2>
+					Account Settings:	
+				</h2>
+				<h2 class="selectable tab" onclick="goto('../PasswordChange')">
+					Change Password
+				</h2>
+				<h2 class="selectable tab" onclick="post()">
+					Log out
+				<h2>
+				{% if AttendanceClubs != [] %}
+					<h2>
+						Attendance Check-in:	
+					</h2>
+					{% for club in AttendanceClubs%}
+						<h2 class="selectable tab" onclick="goto('../Checkin/{{club.id}}')">
+							{{club.name}}
+						<h2>
+					{% end %}
+				{% end %}
+				{% if LeadingClubs != [] %}
+					<h2>
+						Club Manage:
+					</h2>
+					{% for club in LeadingClubs%}
+						<h2 class="selectable tab" onclick="goto('../Manage/{{club.id}}')">
+							{{club.name}}
+						<h2>
+					{% end %}
+				{% end %}
+			</section>
+			</div>
+		</section>
+	</body>
+</html>

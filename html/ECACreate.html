@@ -183,26 +183,14 @@
 			<section style="background: rgba(0,0,0,0); margin: 0px 30px">
 				<form method = "post">
 					<p style="width:240px"> ECA Name:</p> 
-					<input type="text" name="ECA_name" value="{{list['Name']}}">
+					<input type="text" name="ECA_Name" value="{{ Info['ECA_Name'] if 'ECA_Name' in Info else ''}}">
 					<div class="clear"></div>
-					<p style="width:240px">Student Leader:</p> <p>{{list['1']}}</p>
+					<p style="width:240px">Student Leader:</p> <p> {{ Info['ECA_Leader'].name if 'ECA_Leader' in Info else ''}} </p>
 					<input type="submit" value="search" name="search_teacher" style="float:left">
 					<div class="clear"></div>
-					<p style="width:240px">Advisor:</p> <p>{{list['2']}}</p>
+					<p style="width:240px">Advisor:</p> <p> {{ Info['ECA_Advisor'].name if 'ECA_Advisor' in Info else ''}} </p>
 					<input type="submit" value="search" name="search_student">
 					<div class="clear"></div>
-					<p>Days:</p>
-					<div class="clear"></div>
-					{% for i,j in enumerate(["Monday","Tuesday","Wednesday","Thursday"])%}
-						<label class="container">
-							<p>
-								{{j}}
-							</p>
-							<input type="checkbox" name="{{i+1}}" {% if list[i+1]%} checked="" {% end %}>
-							<span class="checkmark"></span>
-						</label>
-						<div class="clear"></div>
-					{% end %}
 					<input type="submit" value="submit" name="submit">
 				</form>
 			</section>

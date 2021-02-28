@@ -14,26 +14,26 @@
 	<body>
 		<section>
 			<h1>
-				Students Management:
-				{{ Title }}
+				Club Management:
+				{{ club.name }}
 			</h1>
 			<hr>
-				{% for i in dic %}
+				{% for i in club.students %}
 				<form style="font-size: 30px" method="post">
 				<p>{{["","Monday","Tuesday","Wednesday","Thursday"][i]}}</p>
 				<input type="text" value="{{i}}" name="day" style="display: none">
-					{% for j in dic[i] %}
+					{% for j in club.students[i] %}
 						<p style="float:left; width:40%; margin-left: 40px;">
-							{{ dic[i][j] }}
+							{{ j.name }}
 						</p>
-						<input type = "submit" value = "delete" name = "{{j}}" style="float:left;">
-						{% if l %}
-							<input type = "submit" value = "Lead" name = "l{{j}}" style="float:left;">
+						<input type = "submit" value = "delete" name = "{{j.id}}" style="float:left;">
+						{% if user.permissionLevel >= 1 %}
+							<input type = "submit" value = "Lead" name = "{{j.id}}" style="float:left;">
 						{% end %}
-						{% if lead[i][j] %}
-						<p style="float:left; max-width:10%; margin-left: 40px;">
-							Leader
-						</p>
+						{% if j.isLeading(club) %}
+							<p style="float:left; max-width:10%; margin-left: 40px;">
+								Leader
+							</p>
 						{% end %}
 						<div style="clear:both"></div>
 					{% end %}

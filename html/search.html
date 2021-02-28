@@ -2,7 +2,7 @@
 <html>
 <head>
 	<title>
-		Search Results for {{a}}
+		Search Results for {{Result}}
 	</title>
 	<style>
 		p{
@@ -205,9 +205,9 @@
 					<input type="text" name="T">
 					<input type="submit" value="Search">
 				</form>
-				{% for i in list %}
-				<p onclick="post('/Search/1/test',{j:{{type}}, i:{{ i[0] }}} )">
-					{{ i[1] }}
+				{% for student in SearchList %}
+				<p onclick="post('',{i:{{ student.id }}} )">
+					{{ student.name }}
 				</p>
 				{% end %}
 			</div>

@@ -11,9 +11,12 @@ class User(object):
 		self.leads = []
 		self.name = name
 		self.permissionLevel = 0
+		self.Temp = {}
 		Data['users'][self.id] = self
 	def LeadClub(self,club):
 		self.leads.append(club.id)
+	def UnleadClub(self,club):
+		self.leads.remove(club.id)
 	def Remove(self):
 		del Data['users'][self.id]
 	def ChangeName(self,name):
@@ -35,19 +38,20 @@ class Student(User):
 	def __init__(self, name):
 		super(Student, self).__init__(name)
 		self.joined_clubs = {1:-1,2:-1,3:-1,4:-1}
-	def JoinClub(self,club_id,day):
-		self.joined_clubs[day] = club_id
-		Data['clubs'][club_id].students[day].append(self.id)
+	def JoinClub(self,club,day):
+		self.joined_clubs[day] = club.id
+		club.students[day].append(self)
 	def LeaveClub(self,day):
 		if self.joined_clubs[day] == -1:
 			return
-		Data['clubs'][self.joined_clubs[day]].students[day].remove(self.id)
+		print(self.joined_clubs[day])
+		getClubById(self.joined_clubs[day]).students[day].remove(self)
 		self.joined_clubs[day] = -1
 	def Remove(self):
 		del Data['users'][self.id]
 		for i in self.joined_clubs:
 			if self.joined_clubs[i] != -1:
-				Data["clubs"][self.joined_clubs[i]].students[i].remove(self.id)
+				Data["clubs"][self.joined_clubs[i]].students[i].remove(self)
 
 class Teacher(User):
 	def __init__(self, name):
