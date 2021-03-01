@@ -12,15 +12,19 @@
 			<div style="width:20%; float:left">Checked State</div>
 			<div style="width:40%; float:left">Absent&nbsp;Ones</div>
 		</div>
-		{%for i in dicti%}
+		{%for club in clubs%}
 		<div style = "margin: 20px 30px">
-			<div style="width:20%; float:left">{{dicti[i][0]}}</div>
-			<div style="width:20%; float:left">{{dicti[i][1]}}</div>
-			{%for j in dicti[i][2]%}
-				<div style="clear:both"></div>
-				<div style="width: 40%; margin:8px 40px; float:left"></div>
-				<div style = "font-size: 15px; float:left; width: 50px">{{j}}</div>
-			{%end%}
+			<div style="width:20%; float:left">{{club.name}}</div>
+			<div style="width:20%; float:left">{{'checked' if club.isChecked() else 'unchecked'}}</div>
+			{% if club.isChecked() %}
+				{% for student in club.students[day] %}
+					{% if student.getStudentCurrentAtt(club) == 'A' %}
+						<div style="clear:both"></div>
+						<div style="width: 40%; margin:8px 40px; float:left"></div>
+						<div style = "font-size: 15px; float:left; width: 50px">{{student.name}}</div>
+					{% end %}
+				{% end %}
+			{% end %}
 			<div style="clear:both"></div>
 		</div>
 		{%end%}

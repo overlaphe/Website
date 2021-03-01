@@ -77,8 +77,10 @@ class Club(object):
 	def Dismiss(self):
 		for day in self.students:
 			for student in self.students[day]:
-				Data['users'][student].joined_clubs[day] = -1
+				student.joined_clubs[day] = -1
 		del Data['clubs'][self.id]
+	def isChecked(self):
+		return self.id in Temp['checkedClub']
 	def __lt__(a,b):
 		return a.name < b.name
 
@@ -109,12 +111,14 @@ def getClubById(id):
 def getUserById(id):
 	return Data['users'][id]
 
-def setStudentAtt(studentId,club,state):
-	current = getUserById(studentId).getStudentCurrentAtt(club)
-	if current == state:
-		return
-	Temp[currrent].remove[student.id]
-	if currrent in ['T','A']:
+def setStudentAtt(student,club,state):
+	current = student.getStudentCurrentAtt(club)
+	if club.id in Temp['checkedClub']:
+		if current == state:
+			return
+		if current in ['T', 'A']:
+			Temp[current].remove(student.id)
+	if state in ['T','A']:
 		Temp[state].append(student.id)
 
 def ClubChecked(club):
