@@ -18,6 +18,16 @@
 				{{ club.name }}
 			</h1>
 			<hr>
+				<p>Leaders & Advisors</p>
+				{% for leader in club.leaders%}
+					<p style="float:left; width:40%; margin-left: 40px;">
+						{{ leader.name }}
+					</p>
+					<div style="clear:both"></div>
+				{% end %}
+				<form style="font-size: 30px" method="post">
+					<input type="submit" value="Add Advisor" name="search_Ad">
+				</form>
 				{% for i in club.students %}
 				<form style="font-size: 30px" method="post">
 				<p>{{["","Monday","Tuesday","Wednesday","Thursday"][i]}}</p>

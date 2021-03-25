@@ -15,10 +15,14 @@ class User(object):
 		Data['users'][self.id] = self
 	def LeadClub(self,club):
 		self.leads.append(club.id)
+		club.leaders.append(self)
 	def UnleadClub(self,club):
 		self.leads.remove(club.id)
+		club.leaders.remove(self)
 	def Remove(self):
 		del Data['users'][self.id]
+		for club in self.leads:
+			club.leaders.remove(self)
 	def ChangeName(self,name):
 		self.name = name
 	def isLeading(self,club):
@@ -42,10 +46,13 @@ class Student(User):
 		self.joined_clubs[day] = club.id
 		club.students[day].append(self)
 	def LeaveClub(self,day):
-		if self.joined_clubs[day] == -1:
-			return
+		# if self.joined_clubs[day] == -1:
+		# 	return
 		print(self.joined_clubs[day])
-		getClubById(self.joined_clubs[day]).students[day].remove(self)
+		try:
+			getClubById(self.joined_clubs[day]).students[day].remove(self)
+		except:
+			pass
 		self.joined_clubs[day] = -1
 	def Remove(self):
 		del Data['users'][self.id]
@@ -73,11 +80,14 @@ class Club(object):
 		self.id = max(Data['clubs'])+1 if Data['clubs'] != {} else 0
 		self.students = {1:[],2:[],3:[],4:[]}
 		self.name = name
+		self.leaders = []
 		Data['clubs'][self.id] = self
 	def Dismiss(self):
+		for leader in self.leaders:
+			leader.UnleadClub(self)
 		for day in self.students:
 			for student in self.students[day]:
-				student.joined_clubs[day] = -1
+				student.leaveClub(day)
 		del Data['clubs'][self.id]
 	def isChecked(self):
 		return self.id in Temp['checkedClub']
