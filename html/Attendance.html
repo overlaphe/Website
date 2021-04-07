@@ -1,226 +1,32 @@
 <!DOCTYPE html>
 <html>
-<head>
-	<title>
-		Attendance
-	</title>
-	<style type="text/css">
-			label{
-				margin-left: 15px;
-			}
-
-			.container {
-				display: block;
-				position: relative;
-				padding-left: 35px;
-				margin-bottom: 12px;
-				cursor: pointer;
-				font-size: 22px;
-				-webkit-user-select: none;
-				-moz-user-select: none;
-				-ms-user-select: none;
-				user-select: none;
-			}
-
-			/* Hide the browser's default checkbox */
-			.container m {
-				margin-left:15px;
-				position: absolute;
-				opacity: 0;
-				cursor: pointer;
-				height: 0;
-				width: 0;
-			}
-
-			.container p{
-				font-size: 30px;
-				margin: 8px;
-				font-family: Arial;
-			}
-
-			/* Create a custom checkbox */
-			.checkmark {
-				border: 3px solid white;
-				border-radius: 3px;
-				position: absolute;
-				top: 0;
-				left: 0;
-				height: 25px;
-				width: 25px;
-				background-color: rgb(255,0,0,0.6);
-			}
-
-			/* On mouse-over, add a grey background color */
-			.container:hover m + .checkmark {
-				background-color: rgb(255,0,0,0.3);
-			}
-
-			/* When the checkbox is checked, add a blue background */
-			.container m[state="P"] ~ .checkmark {
-				background-color: rgb(76,187,23,0.8);
-			}
-
-			.container:hover m[state="P"] ~ .checkmark {
-				background-color: rgba(76,187,23,0.3);
-			}
-
-			/* When the checkbox is checked, add a blue background */
-			.container m[state="T"] ~ .checkmark {
-				background-color: rgb(250,200,10,0.8);
-			}
-
-			.container:hover m[state="T"] ~ .checkmark {
-				background-color: rgba(250,200,10,0.3);
-			}
-
-			/* Create the checkmark/indicator (hidden when not checked) */
-			.checkmark:after {
-				content: "";
-				position: absolute;
-				display: none;
-			}
-
-			/* Show the checkmark when checked */
-			.container m[state="P"] ~ .checkmark:after {
-				display: block;
-			}
-
-			.container m[state="T"] ~ .checkmark:after {
-				display: block;
-			}
-
-			/* Style the checkmark/indicator */
-			.container .checkmark:after {
-				left: 9px;
-				top: 5px;
-				width: 5px;
-				height: 10px;
-				border: solid white;
-				border-width: 0 3px 3px 0;
-				-webkit-transform: rotate(45deg);
-				-ms-transform: rotate(45deg);
-				transform: rotate(45deg);
-			}
-			body {
-				background-image: url("/Asset/bk.gif");
-				background-repeat: no-repeat;
-				background-attachment: fixed;
-				background-size: cover;
-				background-position: center;
-				font-family: Arial;
-				color: white;
-			}
-
-			section{
-				max-width: 1000px;
-				margin: 8px auto;
-				background: rgba(0,0,0,0.3);
-			}
-
-			h1{
-				margin: 10px;
-				font-size: 45px
-			}
-
-			h2{
-				margin: 20px 10px;
-			}
-
-			.selectable:hover{
-				color: rgba(100,100,100,1);
-			}
-
-			.tab {
-				margin-left: 40px;
-				color: rgba(200,200,200);
-			}
-
-			hr {
-				margin: 8px 10px;
-			}
-
-			.sub{
-				margin-left: 20px;
-			}
-
-			button{
-				margin-left:15px;
-				padding: 10px 15px;
-				border-radius: 20px;
-				background: rgba(0,0,0,0.4);
-				font-size: 20px;
-				color: white;
-				border: 3px solid white;
-				margin-bottom: 34px
-			}
-
-			button:active{
-				background: rgba(255,255,255,0.6);
-			}
-
-			button:hover{
-				background: rgba(255,255,255,0.3);
-			}
-	</style>
-	<script type="text/javascript">
-		function changeState(id){
-			E = document.getElementById(id);
-			A = E.getAttribute("state")
-			if (A == 'A'){
-				E.setAttribute("state","P")
-			}else if(A == "P"){
-				E.setAttribute("state","T")
-			}else{
-				E.setAttribute("state","A")
-			}
-			return 0;
-		}
-		function post(path='/Checkin/{{club.id}}', method='post') {
-			const form = document.createElement('form');
-			form.method = method;
-			form.action = path;
-
-			for (i = 0; i < {{ len(students) }}; i++){
-				E = document.getElementById(i);
-
-				const hiddenField = document.createElement('input');
-				hiddenField.type = 'hidden';
-				hiddenField.name = E.getAttribute("uid");
-				if (E.getAttribute("state") == "A"){
-					hiddenField.value = "A";
-				}else if (E.getAttribute("state") == "T"){
-					hiddenField.value = "T";
-				}else{
-					hiddenField.value = "P";
-				}
-				form.appendChild(hiddenField);
-			}
-
-			document.body.appendChild(form);
-			form.submit();
-		}
-	</script>
-</head>
-<body style="background-color: black">
-	<body>
-		<section>
-			<h1>
-				Students Check-in:
-				{{ club.name }}
-			</h1>
-			<hr>
-			{% for i,student in enumerate(students) %}
-				<label class="container">
-					<p onclick="changeState({{i}})">
-						{{ student.name }}
-					</p>
-					<m id="{{i}}" style = "color: red" state="{{student.getStudentCurrentAtt(club)}}" uid="{{student.id}}"></m>
-					<span class="checkmark" onclick="changeState({{i}})"></span>
-				</label>
+	<head>
+		<title>Attendence Check</title>
+	<link rel="stylesheet" type="text/css" href="/Asset/tem.css">
+	</head>
+	<section>
+		<h1>Attendence Data</h1>
+		<hr>
+		<div style = "margin: 20px 30px">
+			<div style="width:20%; float:left">Club Names</div>
+			<div style="width:20%; float:left">Checked State</div>
+			<div style="width:40%; float:left">Absent&nbsp;Ones</div>
+		</div>
+		{%for club in clubs%}
+		<div style = "margin: 20px 30px">
+			<div style="width:20%; float:left">{{club.name}}</div>
+			<div style="width:20%; float:left">{{'checked' if club.isChecked() else 'unchecked'}}</div>
+			{% if club.isChecked() %}
+				{% for student in club.students[day] %}
+					{% if student.getStudentCurrentAtt(club) == 'A' %}
+						<div style="clear:both"></div>
+						<div style="width: 40%; margin:8px 40px; float:left"></div>
+						<div style = "font-size: 15px; float:left; width: 50px">{{student.name}}</div>
+					{% end %}
+				{% end %}
 			{% end %}
-			<button onclick="post()">submit</button>
-			</div>
-		</section>
-	</body>
-</body>
+			<div style="clear:both"></div>
+		</div>
+		{%end%}
+	</section>
 </html>

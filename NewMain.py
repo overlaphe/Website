@@ -339,7 +339,7 @@ def auto_save():
 		if 58500 < n and n < 58570:
 			pickle.dump(Manager.Temp, open("Att/%s-%s" % (current_time.tm_mon, current_time.tm_mday), "wb"))
 			pickle.dump(Manager.Data, open("Historical Data/%s-%s" % (current_time.tm_mon, current_time.tm_mday), "wb"))
-			pickle.dump(Manager.Data, open("Data" % (current_time.tm_mon, current_time.tm_mday), "wb"))
+			pickle.dump(Manager.Data, open("Data", "wb"))
 			Manager.Temp = {"T": [], "A": [], "checkedClub": []}
 
 
